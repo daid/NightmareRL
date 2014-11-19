@@ -10,7 +10,7 @@ var game = {
 		ROT.Display.Rect.cache = false;
 		
 		this.display = new ROT.Display({spacing: 1.001, fontFamily: "Inconsolata", fontWeight: "bold"});
-		this.display.setOptions({fontSize: this.display.computeFontSize(1000, 1000)});
+		this.display.setOptions({fontSize: this.display.computeFontSize(window.innerWidth, window.innerHeight)});
 		document.getElementById("mainDiv").removeChild(document.getElementById("mainDiv").firstChild);
 		document.getElementById("mainDiv").appendChild(this.display.getContainer());
 		
