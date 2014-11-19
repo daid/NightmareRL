@@ -1,73 +1,82 @@
 var Grass = 0;
-var Dirt = 1;
-var Stone = 2;
+var DarkGrass = 1;
+var Dirt = 2;
+var Stone = 3;
 
 function p(x, y)
 {
-	//return x+","+y;
 	return x*25 + y;
 }
 
 var MapTile = function(x, y) {
 	this.floor = Grass;
 	this.actor = null;
-	this.fixture = null;
+	this.static_object = null;
 	this.visible = false;
 	this.player_distance = 100;
 	this.fog_of_war = " 888";
 	
 	game.map[p(x,y)] = this;
 }
-MapTile.prototype = {
-	getGlyph: function()
+MapTile.prototype.getGlyph = function()
+{
+	if (this.actor != null)
+		return this.actor.getGlyph();
+	if (this.static_object != null)
+		return this.static_object.getGlyph();
+	switch(this.floor)
 	{
-		if (this.actor != null)
-			return this.actor.getGlyph();
-		if (this.fixture != null)
-			return this.fixture.getGlyph();
-		switch(this.floor)
-		{
-		case Grass: return ".080";
-		case Dirt: return ".852";
-		case Stone: return ".333";
-		}
-		return "?888";
+	case Grass: return ".090";
+	case DarkGrass: return ".050";
+	case Dirt: return ".852";
+	case Stone: return ".333";
 	}
-};
+	return "?888";
+}
+
+function generateForestArea(start_x)
+{
+	generateFloorTiles(start_x, Grass);
+	
+	for(var n=0; n<30; n++)
+	{
+		var x = start_x + ROT.RNG.getUniformInt(2, 28);
+		var y = ROT.RNG.getUniformInt(0, 19);
+		var pos = p(x, y);
+		if (pos in game.map && game.map[pos].static_object == null)
+		{
+			setFloorBox(x - 1, y, 3, 1, DarkGrass);
+			setFloorBox(x, y - 1, 1, 3, DarkGrass);
+			new Tree(x, y);
+		}
+	}
+
+	for(var n=0; n<10; n++)
+	{
+		var x = start_x + ROT.RNG.getUniformInt(2, 28);
+		var y = ROT.RNG.getUniformInt(0, 18);
+		
+		setFloorBox(x - 2, y - 1, 6, 4, DarkGrass);
+		setFloorBox(x - 1, y - 2, 4, 6, DarkGrass);
+		new BigTreeL(x, y);
+		new BigTreeR(x+1, y);
+		new BigTreeL(x, y+1);
+		new BigTreeR(x+1, y+1);
+	}
+}
 
 function generateMapArea(start_x)
 {
-	var end_x = start_x + 30;
-	var floor_type = ROT.RNG.getUniformInt(0, 2);
-	for(var x=start_x; x<end_x; x++)
-	{
-		for(var y=0; y<20; y++)
-		{
-			if (!(p(x,y) in game.map))
-			{
-				var t = new MapTile(x, y);
-				t.floor = floor_type;
-			}
-		}
-	}
-	for(var x=end_x; x<end_x+5; x++)
-	{
-		for(var y=0; y<20; y++)
-		{
-			if (ROT.RNG.getPercentage() < 80 - (x - end_x)*15)
-			{
-				var t = new MapTile(x, y);
-				t.floor = floor_type;
-			}
-		}
-	}
-	
 	if (start_x == 0)
 	{
 		generateStartArea(start_x);
 	}else{
-		for(var n=0; n<2; n++)
-			new PoesIsBlokje(start_x + ROT.RNG.getUniformInt(0, 30), ROT.RNG.getUniformInt(0, 19));
+		if (ROT.RNG.getPercentage() < 50)
+			generateForestArea(start_x);
+		else
+			generateFloorTiles(start_x, Stone);
+		//for(var n=0; n<2; n++)
+		//	new PoesIsBlokje(start_x + ROT.RNG.getUniformInt(0, 30), ROT.RNG.getUniformInt(0, 19));
 	}
 }
 
@@ -78,7 +87,7 @@ function _checkRecursivePlayerDistance(x, y, score)
 		return false;
 	if (score > 20)
 		return false;
-	if (game.map[pos].fixture != null)
+	if (game.map[pos].static_object != null)
 		return false;
 	if (game.map[pos].player_distance <= score)
 		return false;
@@ -92,10 +101,8 @@ function recursivePlayerDistance(x, y, score)
 	todo_list.push(y);
 	todo_list.push(score);
 	
-	var _tmp = 0;
 	while(todo_list.length > 0)
 	{
-		_tmp++;
 		var x = todo_list.shift();
 		var y = todo_list.shift();
 		var s = todo_list.shift();
@@ -144,54 +151,43 @@ function recursivePlayerDistance(x, y, score)
 		todo_list.push(y+1);
 		todo_list.push(s + 1.2);
 */
-		/*
-		recursivePlayerDistance(x-1, y-1, score+1.2);
-		recursivePlayerDistance(x+1, y-1, score+1.2);
-		recursivePlayerDistance(x-1, y+1, score+1.2);
-		recursivePlayerDistance(x+1, y+1, score+1.2);
-		recursivePlayerDistance(x  , y-1, score+1.0);
-		recursivePlayerDistance(x-1, y  , score+1.0);
-		recursivePlayerDistance(x+1, y  , score+1.0);
-		recursivePlayerDistance(x  , y+1, score+1.0);
-		*/
 	}
-	console.log(_tmp);
 }
 
-var Fixture = function(x, y)
+var StaticObject = function(x, y)
 {
 	this.x = x;
 	this.y = y;
 	var pos = p(x,y);
 	if (pos in game.map)
-		game.map[pos].fixture = this;
+		game.map[pos].static_object = this;
 }
-Fixture.prototype.getGlyph = function()
+StaticObject.prototype.getGlyph = function()
 {
 	return "?F00";
 }
-Fixture.prototype.lightPasses = function()
+StaticObject.prototype.lightPasses = function()
 {
 	return true;
 }
-Fixture.prototype.playerBump = function()
+StaticObject.prototype.playerBump = function()
 {
 	return -1;
 }
 
 var Wall = function(x, y)
 {
-	Fixture.call(this, x, y);
+	StaticObject.call(this, x, y);
 }
-Wall.extend(Fixture);
+Wall.extend(StaticObject);
 Wall.prototype.getGlyph = function() { return "#777"; }
 Wall.prototype.lightPasses = function() { return false; }
 
 var Window = function(x, y)
 {
-	Fixture.call(this, x, y);
+	StaticObject.call(this, x, y);
 }
-Window.extend(Fixture);
+Window.extend(StaticObject);
 Window.prototype.getGlyph = function()
 {
 	return "+777";
@@ -199,15 +195,37 @@ Window.prototype.getGlyph = function()
 
 var Door = function(x, y)
 {
-	Fixture.call(this, x, y);
+	StaticObject.call(this, x, y);
 }
-Door.extend(Fixture);
+Door.extend(StaticObject);
 Door.prototype.getGlyph = function() { return "+A72"; }
 Door.prototype.lightPasses = function() { return false; }
 Door.prototype.playerBump = function()
 {
 	var pos = p(this.x,this.y);
-	game.map[pos].fixture = null;
+	game.map[pos].static_object = null;
 	game.message("You open the door");
 	return 1.5;
 }
+
+var Tree = function(x, y)
+{
+	StaticObject.call(this, x, y);
+}
+Tree.extend(StaticObject);
+Tree.prototype.getGlyph = function() { return "|964"; }
+Tree.prototype.lightPasses = function() { return false; }
+var BigTreeL = function(x, y)
+{
+	StaticObject.call(this, x, y);
+}
+BigTreeL.extend(StaticObject);
+BigTreeL.prototype.getGlyph = function() { return "[964"; }
+BigTreeL.prototype.lightPasses = function() { return false; }
+var BigTreeR = function(x, y)
+{
+	StaticObject.call(this, x, y);
+}
+BigTreeR.extend(StaticObject);
+BigTreeR.prototype.getGlyph = function() { return "]964"; }
+BigTreeR.prototype.lightPasses = function() { return false; }

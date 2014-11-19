@@ -7,10 +7,12 @@ var game = {
 
 	init: function()
 	{
-		ROT.Display.Rect.cache = true;
+		ROT.Display.Rect.cache = false;
 		
-		this.display = new ROT.Display();
-        document.body.appendChild(this.display.getContainer());
+		this.display = new ROT.Display({spacing: 1.001, fontFamily: "Inconsolata", fontWeight: "bold"});
+		this.display.setOptions({fontSize: this.display.computeFontSize(1000, 1000)});
+		document.getElementById("mainDiv").removeChild(document.getElementById("mainDiv").firstChild);
+		document.getElementById("mainDiv").appendChild(this.display.getContainer());
 		
 		this.setupNewGame();
 	},
@@ -61,7 +63,7 @@ var game = {
 			return false;
 		if (this.map[pos].actor != null)
 			return false;
-		if (this.map[pos].fixture != null)
+		if (this.map[pos].static_object != null)
 			return false;
 		return true;
 	},
@@ -71,8 +73,8 @@ var game = {
 		var pos = p(x,y);
 		if (!(pos in this.map))
 			return false;
-		if (this.map[pos].fixture != null)
-			return this.map[pos].fixture.lightPasses();
+		if (this.map[pos].static_object != null)
+			return this.map[pos].static_object.lightPasses();
 		return true;
 	},
 	setVisible: function(x, y, r, f)

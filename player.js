@@ -46,6 +46,8 @@ Player.prototype.handleEvent = function(e)
 },
 Player.prototype.move = function(x, y)
 {
+	if (x > game.view_offset_x + 79)
+		return;
 	if (game.spaceIsFree(x, y))
 	{
 		game.moveActor(this, x, y);
@@ -61,9 +63,9 @@ Player.prototype.move = function(x, y)
 				return;
 			}
 		}
-		if (pos in game.map && game.map[pos].fixture != null)
+		if (pos in game.map && game.map[pos].static_object != null)
 		{
-			var bump_result = game.map[pos].fixture.playerBump();
+			var bump_result = game.map[pos].static_object.playerBump();
 			if (bump_result > 0)
 			{
 				this.executeAction(bump_result);

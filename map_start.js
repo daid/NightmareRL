@@ -1,32 +1,7 @@
-function generateWallBox(x, y, w, h)
-{
-	for(var n=0;n<w;n++)
-	{
-		new Wall(x+n, y);
-		new Wall(x+n, y+h-1);
-	}
-	for(var n=1;n<h-1;n++)
-	{
-		new Wall(x, y+n);
-		new Wall(x+w-1, y+n);
-	}
-}
-
-function setFloorBox(x, y, w, h, floor_type)
-{
-	for(var n=0;n<w;n++)
-	{
-		for(var m=0;m<h;m++)
-		{
-			var pos = p(x+n, y+m);
-			if (pos in game.map)
-				game.map[pos].floor = floor_type;
-		}
-	}
-}
-
 function generateStartArea(start_x)
 {
+	generateFloorTiles(start_x, Grass);
+	
 	var w = 25;
 	var h = 14;
 	var x = start_x + 7;
@@ -42,6 +17,8 @@ function generateStartArea(start_x)
 	new Door(x + w-1, y+6);
 	new Window(x + 4, y);
 	new Window(x + 5, y);
+	new Window(x + 4, y+h-1);
+	new Window(x + 5, y+h-1);
 
 	new Window(x, y + 3);
 	new Window(x, y + 4);
