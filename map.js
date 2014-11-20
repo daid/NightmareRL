@@ -12,6 +12,7 @@ var MapTile = function(x, y) {
 	this.floor = Grass;
 	this.actor = null;
 	this.static_object = null;
+	this.items = [];
 	this.visible = false;
 	this.player_distance = 100;
 	this.fog_of_war = " 888";
@@ -24,6 +25,8 @@ MapTile.prototype.getGlyph = function()
 		return this.actor.getGlyph();
 	if (this.static_object != null)
 		return this.static_object.getGlyph();
+	if (this.items.length > 0)
+		return this.items[this.items.length-1].getGlyph();
 	switch(this.floor)
 	{
 	case Grass: return ".090";
@@ -38,9 +41,9 @@ function generateForestArea(start_x)
 {
 	generateFloorTiles(start_x, Grass);
 	
-	for(var n=0; n<30; n++)
+	for(var n=0; n<20; n++)
 	{
-		var x = start_x + ROT.RNG.getUniformInt(2, 28);
+		var x = start_x + ROT.RNG.getUniformInt(2, 32);
 		var y = ROT.RNG.getUniformInt(0, 19);
 		var pos = p(x, y);
 		if (pos in game.map && game.map[pos].static_object == null)
@@ -51,9 +54,20 @@ function generateForestArea(start_x)
 		}
 	}
 
+	for(var n=0; n<30; n++)
+	{
+		var x = start_x + ROT.RNG.getUniformInt(2, 32);
+		var y = ROT.RNG.getUniformInt(0, 19);
+		var pos = p(x, y);
+		if (pos in game.map && game.map[pos].static_object == null)
+		{
+			new Bush(x, y);
+		}
+	}
+
 	for(var n=0; n<10; n++)
 	{
-		var x = start_x + ROT.RNG.getUniformInt(2, 28);
+		var x = start_x + ROT.RNG.getUniformInt(2, 32);
 		var y = ROT.RNG.getUniformInt(0, 18);
 		
 		setFloorBox(x - 2, y - 1, 6, 4, DarkGrass);
@@ -71,7 +85,7 @@ function generateMapArea(start_x)
 	{
 		generateStartArea(start_x);
 	}else{
-		if (ROT.RNG.getPercentage() < 50)
+		if ((start_x / 30 % 2))
 			generateForestArea(start_x);
 		else
 			generateFloorTiles(start_x, Stone);
@@ -229,3 +243,10 @@ var BigTreeR = function(x, y)
 BigTreeR.extend(StaticObject);
 BigTreeR.prototype.getGlyph = function() { return "]964"; }
 BigTreeR.prototype.lightPasses = function() { return false; }
+
+var Bush = function(x, y)
+{
+	StaticObject.call(this, x, y);
+}
+Bush.extend(StaticObject);
+Bush.prototype.getGlyph = function() { return "%4B4"; }

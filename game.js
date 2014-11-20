@@ -7,7 +7,11 @@ var game = {
 
 	init: function()
 	{
-		ROT.Display.Rect.cache = false;
+		ROT.Display.Rect.cache = true;
+		Array.prototype.remove = function(item)
+		{
+			this.splice(this.indexOf(item), 1);
+		}
 		
 		this.display = new ROT.Display({spacing: 1.001, fontFamily: "Inconsolata", fontWeight: "bold"});
 		this.display.setOptions({fontSize: this.display.computeFontSize(window.innerWidth, window.innerHeight)});
@@ -77,7 +81,7 @@ var game = {
 			return this.map[pos].static_object.lightPasses();
 		return true;
 	},
-	setVisible: function(x, y, r, f)
+	setVisible: function(x, y, r, visibility)
 	{
 		var pos = p(x,y);
 		if (!(pos in this.map))
@@ -93,7 +97,7 @@ var game = {
 			this.map[key].player_distance = 100;
 		}
 		var fov = new ROT.FOV.RecursiveShadowcasting(this.lightPassesCallback.bind(this));
-		fov.compute(this.player.x, this.player.y, 8, this.setVisible.bind(this));
+		fov.compute(this.player.x, this.player.y, this.player.getLightDistance(), this.setVisible.bind(this));
 		recursivePlayerDistance(this.player.x, this.player.y, 0);
 		
 		for(var xx=0; xx<80; xx++)
@@ -115,6 +119,7 @@ var game = {
 						this.map[pos].fog_of_war = glyph[0] + (fog_color[0] >> 4).toString(16) + (fog_color[1] >> 4).toString(16) + (fog_color[2] >> 4).toString(16);
 					}else{
 						var glyph = this.map[pos].fog_of_war;
+						//var glyph = this.map[pos].getGlyph();
 						this.display.draw(xx, y+2, glyph[0], "#" + glyph.slice(1, 4), "#222");
 					}
 				}else{
