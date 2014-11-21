@@ -16,6 +16,8 @@ ElectricalLightbringerBase.prototype.getName = function()
 {
 	if (this.charge >= 95)
 		return this.base_name + " (full)";
+	if (this.charge >= 85)
+		return this.base_name + " (slightly used)";
 	if (this.charge >= 50)
 		return this.base_name + " (used)";
 	if (this.charge >= 30)
@@ -53,7 +55,7 @@ var FlashLight = function(x, y)
 	
 	this.use_factor = 0.3;
 	this.base_name = "Flashlight";
-	this.light_range = 10;
+	this.light_range = 9;
 	this.type = EquipmentHandItem;
 }
 FlashLight.extend(ElectricalLightbringerBase);

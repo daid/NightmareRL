@@ -210,7 +210,7 @@ Player.prototype.move = function(x, y)
 		var pos = p(x, y);
 		if (pos in game.map && game.map[pos].actor != null)
 		{
-			var bump_result = game.map[pos].actor.playerBump();
+			var bump_result = game.map[pos].actor.playerBump(this);
 			if (bump_result > 0)
 			{
 				this.executeAction(bump_result);
@@ -219,7 +219,7 @@ Player.prototype.move = function(x, y)
 		}
 		if (pos in game.map && game.map[pos].static_object != null)
 		{
-			var bump_result = game.map[pos].static_object.playerBump();
+			var bump_result = game.map[pos].static_object.playerBump(this);
 			if (bump_result > 0)
 			{
 				this.executeAction(bump_result);
@@ -229,10 +229,6 @@ Player.prototype.move = function(x, y)
 		game.message("Your way is blocked");
 	}
 }
-Player.prototype.getLightDistance = function()
-{
-	return this.light_range;
-}
 Player.prototype.updateStats = function()
 {
 	this.maxhp = this.base_maxhp;
@@ -240,6 +236,8 @@ Player.prototype.updateStats = function()
 	
 	this.light_range = 1;
 	this.melee_damage = "1d2";
+	this.melee_accuracy = 10;
+	this.melee_attack_delay = 1.0;
 
 	for(var n=0; n<this.equipment.length; n++)
 		if (this.equipment[n] != null)
@@ -247,6 +245,22 @@ Player.prototype.updateStats = function()
 
 	if (this.hp > this.maxhp)
 		this.hp = this.maxhp;
+}
+Player.prototype.takeDamage = function(damage_amount, source)
+{
+	damage_amount -= this.protection;
+	if (damage_amount < 1)
+		damage_amount = 1;
+	
+	this.hp -= damage_amount;
+	if (this.hp < 1)
+	{
+		game.removeActor(this);
+		game.engine.lock();
+		game.draw();
+	}
+	
+	return damage_amount;
 }
 
 function ItemSelect(player, callback)
@@ -273,7 +287,10 @@ function ItemSelect(player, callback)
 	for(var n=0; n<cnt; n++)
 	{
 		var inv = this._player.inventory[n];
-		game.display.drawText(5, 5+n, (n+1) + ") " + inv.amount + "x " + inv.getName());
+		var name = inv.getName();
+		if (inv.stack_size > 1)
+			name = inv.amount + "x " + name;
+		game.display.drawText(5, 5+n, (n+1) + ") " + name);
 	}
 
 	window.removeEventListener("keydown", this._player);

@@ -49,8 +49,12 @@ var game = {
 	
 	addActor: function(actor)
 	{
-		this.map[p(actor.x,actor.y)].actor = actor;
-		this.scheduler.add(actor, true, 1);
+		var pos = p(actor.x,actor.y);
+		if (pos in this.map && this.map[pos].actor == null)
+		{
+			this.map[pos].actor = actor;
+			this.scheduler.add(actor, true, 1);
+		}
 	},
 
 	moveActor: function(actor, x, y)
@@ -60,6 +64,12 @@ var game = {
 		actor.y = y;
 		this.map[p(x,y)].actor = actor;
 	},
+	removeActor: function(actor)
+	{
+		this.map[p(actor.x,actor.y)].actor = null;
+		this.scheduler.remove(actor);
+	},
+	
 	spaceIsFree: function(x, y)
 	{
 		var pos = p(x,y);
@@ -88,16 +98,25 @@ var game = {
 			return;
 		this.map[p(x,y)].visible = true;
 	},
+	setPlayerVisible: function(x, y, r, visibility)
+	{
+		var pos = p(x,y);
+		if (!(pos in this.map))
+			return;
+		this.map[p(x,y)].player_visible = true;
+	},
 	
 	draw: function()
 	{
 		for(var key in this.map)
 		{
 			this.map[key].visible = false;
+			this.map[key].player_visible = false;
 			this.map[key].player_distance = 100;
 		}
 		var fov = new ROT.FOV.RecursiveShadowcasting(this.lightPassesCallback.bind(this));
-		fov.compute(this.player.x, this.player.y, this.player.getLightDistance(), this.setVisible.bind(this));
+		fov.compute(this.player.x, this.player.y, this.player.light_range, this.setVisible.bind(this));
+		fov.compute(this.player.x, this.player.y, 80, this.setPlayerVisible.bind(this));
 		recursivePlayerDistance(this.player.x, this.player.y, 0);
 		
 		for(var xx=0; xx<80; xx++)
@@ -127,6 +146,12 @@ var game = {
 				}
 			}
 		}
+		for(var n=0; n<80;n++)
+		{
+			this.display.draw(n, 22, " ");
+			this.display.draw(n, 23, " ");
+			this.display.draw(n, 24, " ");
+		}
 		if (this.player.equipment[EquipSlotHand] != null)
 			this.display.drawText(0, 22, "Hand: " + this.player.equipment[EquipSlotHand].getName());
 		else
@@ -139,6 +164,8 @@ var game = {
 			this.display.drawText(0, 24, "Head: " + this.player.equipment[EquipSlotHead].getName());
 		else
 			this.display.drawText(0, 24, "Head: -");
+		this.display.drawText(40, 22, "Melee: " + this.player.melee_damage);
+		this.display.drawText(40, 23, "HP: " + this.player.hp + "/" + this.player.maxhp);
 		/*
 		for(var m=0; m<25;m++)
 			for(var n=0; n<80;n++)
@@ -148,10 +175,15 @@ var game = {
 	
 	message: function(s)
 	{
+		for(var n=0; n<80;n++)
+		{
+			this.display.draw(n, 0, " ");
+			this.display.draw(n, 1, " ");
+		}
 		if (this.messageLog.length > 0)
-			this.display.drawText(0, 0, this.messageLog[this.messageLog.length-1].rpad(" ", 79) + "|");
+			this.display.drawText(0, 0, this.messageLog[this.messageLog.length-1]);
 		this.messageLog.push(s);
-		this.display.drawText(0, 1, this.messageLog[this.messageLog.length-1].rpad(" ", 79) + "|");
+		this.display.drawText(0, 1, this.messageLog[this.messageLog.length-1]);
 	},
 	
 	advanceViewOffset: function()
@@ -163,7 +195,7 @@ var game = {
 			{
 				if (this.map[pos].actor != null)
 				{
-					this.scheduler.remove(this.map[pos].actor);
+					this.removeActor(this.map[pos].actor);
 					
 					//When we remove the player from the game, lock the engine so we do not end up in an endless loop. TOFIX: End the game.
 					if (this.map[pos].actor == this.player)

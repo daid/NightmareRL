@@ -58,7 +58,12 @@ TheShadow.prototype.act = function()
 	
 	var pos = p(game.player.x, game.player.y);
 	if (pos in this._tiles)
+	{
 		game.message("You feel the darkness ripping you apart!");
+		game.player.takeDamage(1, null);
+		if (game.player.hp < 1)
+			game.message("You die...");
+	}
 	
-	game.scheduler.setDuration(0.1);
+	game.scheduler.setDuration(0.2);
 }

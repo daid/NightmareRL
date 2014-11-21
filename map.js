@@ -14,6 +14,7 @@ var MapTile = function(x, y) {
 	this.static_object = null;
 	this.items = [];
 	this.visible = false;
+	this.player_visible = false;
 	this.player_distance = 100;
 	this.fog_of_war = " 888";
 	
@@ -76,6 +77,17 @@ function generateForestArea(start_x)
 		new BigTreeR(x+1, y);
 		new BigTreeL(x, y+1);
 		new BigTreeR(x+1, y+1);
+	}
+	for(var n=0; n<10; n++)
+	{
+		var x = start_x + ROT.RNG.getUniformInt(2, 32);
+		var y = ROT.RNG.getUniformInt(0, 19);
+		
+		var pos = p(x, y);
+		if (pos in game.map && game.map[pos].static_object == null)
+		{
+			new GiantSpider(x, y);
+		}
 	}
 }
 
@@ -148,23 +160,30 @@ function recursivePlayerDistance(x, y, score)
 			todo_list.push(y+1);
 			todo_list.push(s + 1.0);
 		}
-		/*
-		if (_checkRecursivePlayerDistance(x+1, y-1, s+1.2))
+		if (_checkRecursivePlayerDistance(x-1, y-1, s+1.2))
 		{
 			todo_list.push(x-1);
 			todo_list.push(y-1);
 			todo_list.push(s + 1.2);
 		}
-		todo_list.push(x+1);
-		todo_list.push(y-1);
-		todo_list.push(s + 1.2);
-		todo_list.push(x-1);
-		todo_list.push(y+1);
-		todo_list.push(s + 1.2);
-		todo_list.push(x+1);
-		todo_list.push(y+1);
-		todo_list.push(s + 1.2);
-*/
+		if (_checkRecursivePlayerDistance(x+1, y-1, s+1.2))
+		{
+			todo_list.push(x+1);
+			todo_list.push(y-1);
+			todo_list.push(s + 1.2);
+		}
+		if (_checkRecursivePlayerDistance(x-1, y+1, s+1.2))
+		{
+			todo_list.push(x-1);
+			todo_list.push(y+1);
+			todo_list.push(s + 1.2);
+		}
+		if (_checkRecursivePlayerDistance(x+1, y+1, s+1.2))
+		{
+			todo_list.push(x+1);
+			todo_list.push(y+1);
+			todo_list.push(s + 1.2);
+		}
 	}
 }
 
@@ -184,7 +203,7 @@ StaticObject.prototype.lightPasses = function()
 {
 	return true;
 }
-StaticObject.prototype.playerBump = function()
+StaticObject.prototype.playerBump = function(player)
 {
 	return -1;
 }
@@ -214,7 +233,7 @@ var Door = function(x, y)
 Door.extend(StaticObject);
 Door.prototype.getGlyph = function() { return "+A72"; }
 Door.prototype.lightPasses = function() { return false; }
-Door.prototype.playerBump = function()
+Door.prototype.playerBump = function(player)
 {
 	var pos = p(this.x,this.y);
 	game.map[pos].static_object = null;

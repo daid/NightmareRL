@@ -12,7 +12,7 @@ Actor.prototype.getGlyph = function()
 {
 	return "?F00";
 }
-Actor.prototype.playerBump = function()
+Actor.prototype.playerBump = function(player)
 {
 	return -1;
 }
