@@ -127,7 +127,18 @@ var game = {
 				}
 			}
 		}
-		this.display.drawText(0, 22, "" + this.view_offset_x);
+		if (this.player.equipment[EquipSlotHand] != null)
+			this.display.drawText(0, 22, "Hand: " + this.player.equipment[EquipSlotHand].getName());
+		else
+			this.display.drawText(0, 22, "Hand: -");
+		if (this.player.equipment[EquipSlotBody] != null)
+			this.display.drawText(0, 23, "Body: " + this.player.equipment[EquipSlotBody].getName());
+		else
+			this.display.drawText(0, 23, "Body: -");
+		if (this.player.equipment[EquipSlotHead] != null)
+			this.display.drawText(0, 24, "Head: " + this.player.equipment[EquipSlotHead].getName());
+		else
+			this.display.drawText(0, 24, "Head: -");
 		/*
 		for(var m=0; m<25;m++)
 			for(var n=0; n<80;n++)

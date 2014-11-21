@@ -1,12 +1,17 @@
+var EquipSlotHand = 0;
+var EquipSlotBody = 1;
+var EquipSlotHead = 2;
+
 var Player = function(x, y) {
 	this.inventory = []
 	this.max_inventory_size = 10;
 	
-	this.equip_hand = null;
-	this.equip_body = null;
-	this.equip_head = null;
+	this.equipment = [null, null, null];
 	
-	this.light_range = 1;
+	this.base_maxhp = 50;
+	this.hp = this.base_maxhp;
+	
+	this.updateStats();
 	
 	Actor.call(this, x, y);
 }
@@ -19,6 +24,17 @@ Player.prototype.act = function()
 	window.addEventListener("keydown", this);
 	window.addEventListener("keypress", this);
 	
+	var pos = p(this.x, this.y);
+	var item_list = "";
+	for(var n=0; n<game.map[pos].items.length; n++)
+	{
+		var item = game.map[pos].items[n];
+		item_list += " " + item.amount + "x " + item.getName();
+	}
+	if (item_list.length > 0)
+	{
+		game.message("On the floor:" + item_list);
+	}
 	this.updateStats();
 }
 Player.prototype.getGlyph = function()
@@ -28,6 +44,9 @@ Player.prototype.getGlyph = function()
 Player.prototype.executeAction = function(duration)
 {
 	t = Date.now();
+	for(var n=0; n<this.equipment.length; n++)
+		if (this.equipment[n] != null)
+			this.equipment[n].tickWhenEquiped(this, duration);
 	game.scheduler.setDuration(duration);
 	window.removeEventListener("keydown", this);
 	window.removeEventListener("keypress", this);
@@ -93,7 +112,7 @@ Player.prototype.handleEvent = function(e)
 			//Wait action.
 			this.executeAction(1);
 			break;
-		case "p"://pickup
+		case "g"://get/pickup
 			if (game.map[p(this.x, this.y)].items.length < 1)
 			{
 				game.message("There is nothing here to pickup.");
@@ -124,26 +143,50 @@ Player.prototype.handleEvent = function(e)
 				switch(inv.type)
 				{
 				case EquipmentHandItem:
-					game.message("You take the " + inv.getName() + " in your hand");
-					this.inventory.remove(inv);
-					if (this.equip_hand != null)
-						this.inventory.push(this.equip_hand);
-					this.equip_hand = inv;
-					this.updateStats();
-					this.executeAction(2.5);
-					break;
+				case EquipmentBodyItem:
 				case EquipmentHeadItem:
-					game.message("You put the " + inv.getName() + " on your head");
+					var slot;
+					switch(inv.type)
+					{
+					case EquipmentHandItem:
+						game.message("You take the " + inv.getName() + " in your hand");
+						slot = EquipSlotHand;
+						break;
+					case EquipmentBodyItem:
+						game.message("You wear the " + inv.getName());
+						slot = EquipSlotBody;
+						break;
+					case EquipmentHeadItem:
+						game.message("You put the " + inv.getName() + " on your head");
+						slot = EquipSlotHead;
+						break;
+					}
 					this.inventory.remove(inv);
-					if (this.equip_head != null)
-						this.inventory.push(this.equip_head);
-					this.equip_head = inv;
+					if (this.equipment[slot] != null)
+						this.inventory.push(this.equipment[slot]);
+					this.equipment[slot] = inv;
 					this.updateStats();
 					this.executeAction(2.5);
 					break;
 				default:
 					game.draw();
 					game.message("You cannot equip a " + inv.getName());
+				}
+			}.bind(this));
+			break;
+		case "u"://Use
+			new ItemSelect(this, function(index) {
+				var inv = this.inventory[index];
+				var duration = inv.useItem(this);
+				if (inv.amount < 1)
+					this.inventory.remove(inv);
+				if (duration > 0)
+				{
+					this.executeAction(duration);
+				}else{
+					if (duration < 0)
+						game.message("Cannot use a " + inv.getName() + " like this");
+					game.draw();
 				}
 			}.bind(this));
 			break;
@@ -192,13 +235,18 @@ Player.prototype.getLightDistance = function()
 }
 Player.prototype.updateStats = function()
 {
+	this.maxhp = this.base_maxhp;
+	this.protection = 0;
+	
 	this.light_range = 1;
-	if (this.equip_hand != null)
-		this.equip_hand.updatePlayerWhenEquiped(this);
-	if (this.equip_body != null)
-		this.equip_body.updatePlayerWhenEquiped(this);
-	if (this.equip_head != null)
-		this.equip_head.updatePlayerWhenEquiped(this);
+	this.melee_damage = "1d2";
+
+	for(var n=0; n<this.equipment.length; n++)
+		if (this.equipment[n] != null)
+			this.equipment[n].updatePlayerWhenEquiped(this);
+
+	if (this.hp > this.maxhp)
+		this.hp = this.maxhp;
 }
 
 function ItemSelect(player, callback)
@@ -257,11 +305,14 @@ ItemSelect.prototype.handleEvent = function(e)
 				index = 10;
 			index--;
 
-			window.addEventListener("keydown", this._player);
-			window.addEventListener("keypress", this._player);
-			window.removeEventListener("keydown", this);
-			window.removeEventListener("keypress", this);
-			this._callback(index);
+			if (index < this._player.inventory.length)
+			{
+				window.addEventListener("keydown", this._player);
+				window.addEventListener("keypress", this._player);
+				window.removeEventListener("keydown", this);
+				window.removeEventListener("keypress", this);
+				this._callback(index);
+			}
 		}
 		break;
 	}

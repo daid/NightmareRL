@@ -48,5 +48,5 @@ function generateStartArea(start_x)
 	
 	new FlashLight(x + 3, y + 3);
 	new HeadLight(x + 4, y + 3);
-	new FlashLight(x + 5, y + 3);
+	new Batteries(x + 5, y + 3);
 }
