@@ -44,7 +44,14 @@ var game = {
 		}
 		
 		this.player = new Player(9, 5);
+		var light = new FlashLight(this.player.x, this.player.y);
+		light.charge = 100;
+		light.pickup(this.player);
+		this.player.inventory.remove(light);
+		this.player.equipment[EquipSlotHand] = light;
+
 		this.engine.start();
+		new MessageBox(this.player, StartText);
 	},
 	
 	addActor: function(actor)

@@ -78,7 +78,7 @@ var HeadLight = function(x, y)
 HeadLight.extend(ElectricalLightbringerBase);
 HeadLight.prototype.getGlyph = function() { return "*CC2"; }
 
-Batteries = function(x, y)
+var Batteries = function(x, y)
 {
 	Item.call(this, x, y);
 	

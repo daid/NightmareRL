@@ -1,7 +1,7 @@
-var UsableItem = 0;
-var EquipmentHandItem = 1;
-var EquipmentBodyItem = 2;
-var EquipmentHeadItem = 3;
+var EquipmentHandItem = 0;
+var EquipmentBodyItem = 1;
+var EquipmentHeadItem = 2;
+var UsableItem = 3;
 var MiscItem = 4;
 var Item = function(x, y)
 {
@@ -43,7 +43,7 @@ Item.prototype.pickup = function(player)
 	
 	if (this.amount > 0)
 	{
-		if (player.inventory.length > player.max_inventory_size)
+		if (player.inventory.length >= player.max_inventory_size)
 		{
 			return added;
 		}

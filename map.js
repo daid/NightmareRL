@@ -30,10 +30,10 @@ MapTile.prototype.getGlyph = function()
 		return this.items[this.items.length-1].getGlyph();
 	switch(this.floor)
 	{
-	case Grass: return ".090";
-	case DarkGrass: return ".050";
+	case Grass: return ".0A0";
+	case DarkGrass: return ".060";
 	case Dirt: return ".852";
-	case Stone: return ".333";
+	case Stone: return ".444";
 	}
 	return "?888";
 }
@@ -68,8 +68,12 @@ function generateForestArea(start_x)
 
 	for(var n=0; n<10; n++)
 	{
-		var x = start_x + ROT.RNG.getUniformInt(2, 32);
-		var y = ROT.RNG.getUniformInt(0, 18);
+		do
+		{
+			var x = start_x + ROT.RNG.getUniformInt(2, 32);
+			var y = ROT.RNG.getUniformInt(0, 18);
+		}
+		while(!game.spaceIsFree(x, y) || !game.spaceIsFree(x + 1, y) || !game.spaceIsFree(x, y + 1) || !game.spaceIsFree(x + 1, y + 1))
 		
 		setFloorBox(x - 2, y - 1, 6, 4, DarkGrass);
 		setFloorBox(x - 1, y - 2, 4, 6, DarkGrass);
@@ -78,16 +82,17 @@ function generateForestArea(start_x)
 		new BigTreeL(x, y+1);
 		new BigTreeR(x+1, y+1);
 	}
-	for(var n=0; n<10; n++)
+	for(var n=0; n<6; n++)
 	{
-		var x = start_x + ROT.RNG.getUniformInt(2, 32);
-		var y = ROT.RNG.getUniformInt(0, 19);
-		
-		var pos = p(x, y);
-		if (pos in game.map && game.map[pos].static_object == null)
+		do
 		{
-			new GiantSpider(x, y);
-		}
+			var x = start_x + ROT.RNG.getUniformInt(2, 32);
+			var y = ROT.RNG.getUniformInt(0, 19);
+			
+			var pos = p(x, y);
+		}while(!(pos in game.map) || game.map[pos].static_object != null || game.map[pos].actor != null)
+
+		new GiantSpider(x, y);
 	}
 }
 

@@ -1,3 +1,15 @@
+var StartText = "It is this dream again. This nightmare. "+
+	"You have it every night.\n"+
+	"Will you manage to escape the darkness this time? "+
+	"Or will you once again fall victim to the horrors that haunt you.\n"+
+	"\n"+
+	"(Tip: Press '?' for help)";
+var HelpText = "Arrow keys: Move\n" +
+	".: Wait\n"+
+	"g: Pickup (get) item from floor\n"+
+	"u: Use item.\n"+
+	"e: Equip item\nd: Drop item";
+
 var EquipSlotHand = 0;
 var EquipSlotBody = 1;
 var EquipSlotHead = 2;
@@ -33,7 +45,10 @@ Player.prototype.act = function()
 	}
 	if (item_list.length > 0)
 	{
-		game.message("On the floor:" + item_list);
+		item_list = "On the floor:" + item_list;
+		if (item_list.length > 80)
+			item_list = item_list.slice(0, 77) + "...";
+		game.message(item_list);
 	}
 	this.updateStats();
 }
@@ -190,6 +205,9 @@ Player.prototype.handleEvent = function(e)
 				}
 			}.bind(this));
 			break;
+		case "?"://Help
+			new MessageBox(this, HelpText);
+			break;
 		default:
 			console.log("Unhandled key pressed: " + String.fromCharCode(e.charCode));
 			return;
@@ -271,15 +289,16 @@ function ItemSelect(player, callback)
 	var cnt = this._player.inventory.length;
 	if (cnt < 1)
 		return;
+	this._player.inventory.sort(function(a, b) { if (a.type != b.type) return a.type - b.type; return a.getName().localeCompare(b.getName()); });
 	
 	for(var n=0;n<cnt+2;n++)
 	{
-		for(var m=0;m<40;m++)
+		for(var m=0;m<60;m++)
 			game.display.draw(3+m, 4+n, " ");
 		game.display.draw(3, 4+n, "|");
-		game.display.draw(42, 4+n, "|");
+		game.display.draw(62, 4+n, "|");
 	}
-	for(var n=0;n<40;n++)
+	for(var n=0;n<60;n++)
 	{
 		game.display.draw(3+n, 3, "-");
 		game.display.draw(3+n, 6+cnt, "-");
@@ -290,7 +309,8 @@ function ItemSelect(player, callback)
 		var name = inv.getName();
 		if (inv.stack_size > 1)
 			name = inv.amount + "x " + name;
-		game.display.drawText(5, 5+n, (n+1) + ") " + name);
+		game.display.drawText(5, 5+n, ((n+1)%10) + ")   " + name);
+		game.display.draw(8, 5+n, inv.getGlyph()[0], "#" + inv.getGlyph().slice(1, 4));
 	}
 
 	window.removeEventListener("keydown", this._player);
@@ -333,4 +353,37 @@ ItemSelect.prototype.handleEvent = function(e)
 		}
 		break;
 	}
+}
+
+MessageBox = function(player, message)
+{
+	this._player = player;
+
+	var cnt = game.display.drawText(5, 5, message, 56);
+	for(var n=0;n<cnt+2;n++)
+	{
+		for(var m=0;m<60;m++)
+			game.display.draw(3+m, 4+n, " ");
+		game.display.draw(3, 4+n, "|");
+		game.display.draw(62, 4+n, "|");
+	}
+	for(var n=0;n<60;n++)
+	{
+		game.display.draw(3+n, 3, "-");
+		game.display.draw(3+n, 6+cnt, "-");
+	}
+	game.display.drawText(5, 5, message, 56);
+
+	window.removeEventListener("keydown", this._player);
+	window.removeEventListener("keypress", this._player);
+	//window.addEventListener("keydown", this);
+	window.addEventListener("keypress", this);
+}
+MessageBox.prototype.handleEvent = function(e) 
+{
+	window.addEventListener("keydown", this._player);
+	window.addEventListener("keypress", this._player);
+	//window.removeEventListener("keydown", this);
+	window.removeEventListener("keypress", this);
+	game.draw();
 }
