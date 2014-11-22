@@ -7,7 +7,7 @@ var ElectricalLightbringerBase = function(x, y)
 		this.charge = ROT.RNG.getUniformInt(60, 100)
 	if (ROT.RNG.getPercentage() < 10)
 		this.charge = 0.0;
-	this.use_factor = 0.3;
+	this.use_factor = 0.5;
 	this.base_name = "Unknown";
 	this.light_range = 10;
 }
@@ -53,7 +53,7 @@ var FlashLight = function(x, y)
 {
 	ElectricalLightbringerBase.call(this, x, y);
 	
-	this.use_factor = 0.3;
+	this.use_factor = 0.5;
 	this.base_name = "Flashlight";
 	this.light_range = 9;
 	this.type = EquipmentHandItem;
@@ -70,7 +70,7 @@ var HeadLight = function(x, y)
 {
 	ElectricalLightbringerBase.call(this, x, y);
 	
-	this.use_factor = 0.15;
+	this.use_factor = 0.3;
 	this.base_name = "HeadLight";
 	this.light_range = 5;
 	this.type = EquipmentHeadItem;

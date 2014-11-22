@@ -1,7 +1,7 @@
 
 function generateHouseArea(start_x)
 {
-	function placeRandomDoor(x, y, dir, size)
+	function placeRandomInWall(x, y, dir, size, type)
 	{
 		var deltaA = [1, 0];
 		var deltaB = [0, 1];
@@ -24,7 +24,7 @@ function generateHouseArea(start_x)
 			}
 		}
 		var n = options.random();
-		new Door(x + deltaB[0] * n, y + deltaB[1] * n);
+		new type(x + deltaB[0] * n, y + deltaB[1] * n);
 	}
 	
 	function splitBox(x, y, w, h)
@@ -45,14 +45,14 @@ function generateHouseArea(start_x)
 			splitBox(x, y, w, split);
 			splitBox(x, y + split, w, h - split);
 
-			placeRandomDoor(x, y + split, true, w);
+			placeRandomInWall(x, y + split, true, w, Door);
 		}else{
 			var split = ROT.RNG.getUniformInt(2, w - 3);
 			generateWallBox(x + split, y, 1, h);
 			splitBox(x, y, split, h);
 			splitBox(x + split, y, w - split, h);
 			
-			placeRandomDoor(x + split, y, false, h);
+			placeRandomInWall(x + split, y, false, h, Door);
 		}
 	}
 
@@ -66,10 +66,21 @@ function generateHouseArea(start_x)
 	generateWallBox(x, y, w, h);
 	setFloorBox(x, y, w, h, Stone);
 	splitBox(x, y, w, h);
-	placeRandomDoor(x, y, false, h);
-	placeRandomDoor(x, y, false, h);
-	placeRandomDoor(x+w-1, y, false, h);
-	placeRandomDoor(x+w-1, y, false, h);
+	for(var n=0; n<3;n++)
+	{
+		placeRandomInWall(x, y, false, h, Window);
+		placeRandomInWall(x+w-1, y, false, h, Window);
+	}
+	placeRandomInWall(x, y, false, h, Door);
+	placeRandomInWall(x, y, false, h, Door);
+	placeRandomInWall(x+w-1, y, false, h, Door);
+	placeRandomInWall(x+w-1, y, false, h, Door);
+
+	for(var n=0; n<5; n++)
+	{
+		placeRandomInWall(x, y, true, w, Window);
+		placeRandomInWall(x, y+h-1, true, w, Window);
+	}
 	
 	for(var n=0; n<3; n++)
 	{

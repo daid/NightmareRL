@@ -158,53 +158,32 @@ Player.prototype.handleEvent = function(e)
 		case "e"://Equip
 			new ItemSelect(this, function(index) {
 				var inv = this.inventory[index];
-				switch(inv.type)
-				{
-				case EquipmentHandItem:
-				case EquipmentBodyItem:
-				case EquipmentHeadItem:
-					var slot;
-					switch(inv.type)
-					{
-					case EquipmentHandItem:
-						game.message("You take the " + inv.getName() + " in your hand");
-						slot = EquipSlotHand;
-						break;
-					case EquipmentBodyItem:
-						game.message("You wear the " + inv.getName());
-						slot = EquipSlotBody;
-						break;
-					case EquipmentHeadItem:
-						game.message("You put the " + inv.getName() + " on your head");
-						slot = EquipSlotHead;
-						break;
-					}
-					this.inventory.remove(inv);
-					if (this.equipment[slot] != null)
-						this.inventory.push(this.equipment[slot]);
-					this.equipment[slot] = inv;
-					this.updateStats();
-					this.executeAction(2.5);
-					break;
-				default:
-					game.draw();
-					game.message("You cannot equip a " + inv.getName());
-				}
+				this.equipItem(inv);
 			}.bind(this));
 			break;
 		case "u"://Use
 			new ItemSelect(this, function(index) {
 				var inv = this.inventory[index];
-				var duration = inv.useItem(this);
-				if (inv.amount < 1)
-					this.inventory.remove(inv);
-				if (duration > 0)
+				this.useItem(inv);
+			}.bind(this));
+			break;
+		case "i"://Inventory
+			new ItemSelect(this, function(index) {
+				var inv = this.inventory[index];
+				switch(inv.type)
 				{
-					this.executeAction(duration);
-				}else{
-					if (duration < 0)
-						game.message("Cannot use a " + inv.getName() + " like this");
+				case EquipmentHandItem:
+				case EquipmentBodyItem:
+				case EquipmentHeadItem:
+					this.equipItem(inv);
+					break;
+				case UsableItem:
+					this.useItem(inv);
+					break;
+				case MiscItem:
+				default:
 					game.draw();
+					break;
 				}
 			}.bind(this));
 			break;
@@ -222,7 +201,56 @@ Player.prototype.handleEvent = function(e)
 		break;
 	}
 	e.preventDefault();
-},
+}
+Player.prototype.equipItem = function(inv)
+{
+	switch(inv.type)
+	{
+	case EquipmentHandItem:
+	case EquipmentBodyItem:
+	case EquipmentHeadItem:
+		var slot;
+		switch(inv.type)
+		{
+		case EquipmentHandItem:
+			game.message("You take the " + inv.getName() + " in your hand");
+			slot = EquipSlotHand;
+			break;
+		case EquipmentBodyItem:
+			game.message("You wear the " + inv.getName());
+			slot = EquipSlotBody;
+			break;
+		case EquipmentHeadItem:
+			game.message("You put the " + inv.getName() + " on your head");
+			slot = EquipSlotHead;
+			break;
+		}
+		this.inventory.remove(inv);
+		if (this.equipment[slot] != null)
+			this.inventory.push(this.equipment[slot]);
+		this.equipment[slot] = inv;
+		this.updateStats();
+		this.executeAction(2.5);
+		break;
+	default:
+		game.draw();
+		game.message("You cannot equip a " + inv.getName());
+	}
+}
+Player.prototype.useItem = function(inv)
+{
+	var duration = inv.useItem(this);
+	if (inv.amount < 1)
+		this.inventory.remove(inv);
+	if (duration > 0)
+	{
+		this.executeAction(duration);
+	}else{
+		if (duration < 0)
+			game.message("Cannot use a " + inv.getName() + " like this");
+		game.draw();
+	}
+}
 Player.prototype.move = function(x, y)
 {
 	if (x > game.view_offset_x + 79)

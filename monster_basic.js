@@ -94,4 +94,28 @@ Ghost.prototype.act = function()
 	
 	game.scheduler.setDuration(this.move_delay);
 }
+Ghost.prototype.aiMoveToPlayer = function()
+{
+	var dx = game.player.x - this.x;
+	var dy = game.player.y - this.y;
+	
+	if (Math.abs(dx) < 2 && Math.abs(dy) < 2)
+	{
+		this.meleeAttackEnemy(game.player);
+		return true;
+	}
+	
+	var new_x = this.x + Math.sign(dx);
+	var new_y = this.y + Math.sign(dy);
+	var pos = p(new_x, new_y);
+	if (game.moveActor(this, new_x, new_y))
+	{
+		if (new_x != this.x && new_y != this.y)
+			game.scheduler.setDuration(this.move_delay * 1.2);
+		else
+			game.scheduler.setDuration(this.move_delay);
+		return true;
+	}
+	return MonsterBase.prototype.aiMoveToPlayer.call(this);
+}
 Ghost.prototype.getGlyph = function() { return "gFFF"; }
