@@ -66,7 +66,7 @@ function addRandomItem(x, y, w, h)
 		Medkit: 10,
 		Batteries: 2,
 		Knife: 5,
-		Sword: 5,
+		Sword: 2,
 		HeadLight: 1,
 		FlashLight: 5,
 	};
