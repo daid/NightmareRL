@@ -23,7 +23,7 @@ var game = {
 	
 	setupNewGame: function()
 	{
-		ROT.RNG.setSeed(1);
+		//ROT.RNG.setSeed(1);
 
 		this.scheduler = new ROT.Scheduler.Action();
 		this.engine = new ROT.Engine(this.scheduler);
@@ -66,10 +66,14 @@ var game = {
 
 	moveActor: function(actor, x, y)
 	{
+		var new_pos = p(x,y);
+		if (!(new_pos in this.map) || this.map[new_pos].actor != null)
+			return false;
 		this.map[p(actor.x,actor.y)].actor = null;
 		actor.x = x;
 		actor.y = y;
-		this.map[p(x,y)].actor = actor;
+		this.map[new_pos].actor = actor;
+		return true;
 	},
 	removeActor: function(actor)
 	{
