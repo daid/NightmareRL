@@ -76,4 +76,7 @@ function generateHouseArea(start_x)
 		var g = new Ghost(x+ROT.RNG.getUniformInt(1, w-2), y+ROT.RNG.getUniformInt(1, h-2));
 		g.move_area = [x+1, y+1, w-2, h-2];
 	}
+
+	for(var n=0; n<2; n++)
+		addRandomItem(x, y, w, h);
 }

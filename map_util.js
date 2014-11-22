@@ -52,3 +52,24 @@ function setFloorBox(x, y, w, h, floor_type)
 		}
 	}
 }
+
+function addRandomItem(x, y, w, h)
+{
+	do
+	{
+		var xx = ROT.RNG.getUniformInt(x, x+w-1);
+		var yy = ROT.RNG.getUniformInt(y, y+h-1);
+		var pos = p(xx, yy);
+	}while(pos in game.map && game.map[pos].static_object != null);
+	
+	var options = {
+		Medkit: 10,
+		Batteries: 2,
+		Knife: 5,
+		Sword: 5,
+		HeadLight: 1,
+		FlashLight: 5,
+	};
+	var itemName = ROT.RNG.getWeightedValue(options);
+	new window[itemName](xx, yy);
+}

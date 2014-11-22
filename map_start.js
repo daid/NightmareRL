@@ -44,13 +44,9 @@ function generateStartArea(start_x)
 	new Window(x + 21, y);
 	new Window(x + 21, y + h - 1);
 	
-	new FlashLight(x + 3, y + 3);
-	new HeadLight(x + 4, y + 3);
-	new Batteries(x + 5, y + 3);
-
 	new Batteries(x + 11, y + 2);
-	new Batteries(x + 16, y + 2);
-	new Batteries(x + 21, y + 2);
+	new Knife(x + 16, y + 2);
+	new Sword(x + 21, y + 2);
 
 	new Medkit(x + 11, y + 11);
 	new Medkit(x + 16, y + 11);

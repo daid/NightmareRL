@@ -4,6 +4,7 @@ var game = {
 	the_shadow: null,
 	player: null,
 	view_offset_x: 0,
+	debug: false,
 
 	init: function()
 	{
@@ -117,7 +118,7 @@ var game = {
 		this.map[p(x,y)].player_visible = true;
 	},
 	
-	draw: function()
+	updateGlobalPlayerData: function()
 	{
 		for(var key in this.map)
 		{
@@ -129,7 +130,10 @@ var game = {
 		fov.compute(this.player.x, this.player.y, this.player.light_range, this.setVisible.bind(this));
 		fov.compute(this.player.x, this.player.y, 80, this.setPlayerVisible.bind(this));
 		recursivePlayerDistance(this.player.x, this.player.y, 0);
-		
+	},
+	
+	draw: function()
+	{
 		for(var xx=0; xx<80; xx++)
 		{
 			var x = xx + this.view_offset_x;
@@ -149,7 +153,8 @@ var game = {
 						this.map[pos].fog_of_war = glyph[0] + (fog_color[0] >> 4).toString(16) + (fog_color[1] >> 4).toString(16) + (fog_color[2] >> 4).toString(16);
 					}else{
 						var glyph = this.map[pos].fog_of_war;
-						//var glyph = this.map[pos].getGlyph();
+						if (game.debug)
+							var glyph = this.map[pos].getGlyph();
 						this.display.draw(xx, y+2, glyph[0], "#" + glyph.slice(1, 4), "#222");
 					}
 				}else{

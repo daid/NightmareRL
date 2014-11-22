@@ -32,6 +32,8 @@ Player.extend(Actor);
 Player.prototype.act = function()
 {
 	game.engine.lock();
+	this.updateStats();
+	game.updateGlobalPlayerData();
 	game.draw();
 	window.addEventListener("keydown", this);
 	window.addEventListener("keypress", this);
@@ -65,6 +67,7 @@ Player.prototype.executeAction = function(duration)
 	game.scheduler.setDuration(duration);
 	window.removeEventListener("keydown", this);
 	window.removeEventListener("keypress", this);
+	game.updateGlobalPlayerData();
 	game.engine.unlock();
 	tick_time = (Date.now() - t);
 	console.log("Tick time:" + tick_time + " (" + 1000/tick_time + ")");
@@ -207,6 +210,10 @@ Player.prototype.handleEvent = function(e)
 			break;
 		case "?"://Help
 			new MessageBox(this, HelpText);
+			break;
+		case "^"://Toggle debug mode.
+			game.debug = !game.debug;
+			game.draw();
 			break;
 		default:
 			console.log("Unhandled key pressed: " + String.fromCharCode(e.charCode));
