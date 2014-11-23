@@ -16,6 +16,8 @@ BodyArmor.prototype.updatePlayerWhenEquiped = function(player)
 BodyArmor.prototype.takeDamage = function(player, damage_amount, source)
 {
 	this.health -= (damage_amount + 2) * 100 / player.maxhp;
+	if (this.health < 0)
+		this.health = 0;
 }
 
 var Helmet = function(x, y)
@@ -36,4 +38,6 @@ Helmet.prototype.updatePlayerWhenEquiped = function(player)
 Helmet.prototype.takeDamage = function(player, damage_amount, source)
 {
 	this.health -= (damage_amount + 1) * 100 / player.maxhp;
+	if (this.health < 0)
+		this.health = 0;
 }

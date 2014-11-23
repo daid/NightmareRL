@@ -65,6 +65,7 @@ var Ghost = function(x, y) {
 	
 	this.move_delay = 2.0;
 	this.name = "Ghost";
+	this.state = "wander";
 	
 	this.move_area = null;
 }
@@ -72,24 +73,41 @@ Ghost.extend(MonsterBase);
 Ghost.prototype.act = function()
 {
 	var pos = p(this.x, this.y);
-	if (game.map[pos].player_visible)
+	switch(this.state)
 	{
-		if (this.aiMoveToPlayer())
-			return;
-	}
-	
-	var delta = ROT.DIRS[8].random();
-	var new_x = this.x + delta[0];
-	var new_y = this.y + delta[1];
-	if (this.move_area == null || (new_x >= this.move_area[0] && new_x < this.move_area[0] + this.move_area[2] && new_y >= this.move_area[1] && new_y < this.move_area[1] + this.move_area[3]))
-	{
-		if (game.moveActor(this, new_x, new_y))
+	case "want_to_flee":
+		this.state = "flee";
+	case "wander":
+		if (game.map[pos].player_visible)
 		{
-			if (new_x != this.x && new_y != this.y)
-				game.scheduler.setDuration(this.move_delay * 1.2);
-			else
-				game.scheduler.setDuration(this.move_delay);
+			if (this.aiMoveToPlayer())
+				return;
 		}
+		
+		var delta = ROT.DIRS[8].random();
+		var new_x = this.x + delta[0];
+		var new_y = this.y + delta[1];
+		if (this.move_area == null || (new_x >= this.move_area[0] && new_x < this.move_area[0] + this.move_area[2] && new_y >= this.move_area[1] && new_y < this.move_area[1] + this.move_area[3]))
+		{
+			if (game.moveActor(this, new_x, new_y))
+			{
+				if (new_x != this.x && new_y != this.y)
+					game.scheduler.setDuration(this.move_delay * 1.2);
+				else
+					game.scheduler.setDuration(this.move_delay);
+			}
+		}
+		break;
+	case "flee":
+		this.move_delay = 1.0;
+		var pd = game.map[pos].player_distance;
+		if (pd < 5)
+			if (this.aiFleeFromPlayer())
+				return;
+		this.move_delay = 2.0;
+		this.state = "wander";
+		game.scheduler.setDuration(0.1);
+		return;
 	}
 	
 	game.scheduler.setDuration(this.move_delay);
@@ -118,4 +136,15 @@ Ghost.prototype.aiMoveToPlayer = function()
 	}
 	return MonsterBase.prototype.aiMoveToPlayer.call(this);
 }
-Ghost.prototype.getGlyph = function() { return "gFFF"; }
+Ghost.prototype.getGlyph = function()
+{
+	if (this.state == "wander")
+		return "gFFF";
+	return "gAAA";
+}
+Ghost.prototype.takeDamage = function(damage_amount, source)
+{
+	if (this.state == "wander")
+		this.state = "want_to_flee";
+	return MonsterBase.prototype.takeDamage.call(this, damage_amount, source);
+}
