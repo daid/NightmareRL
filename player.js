@@ -7,8 +7,11 @@ var StartText = "It is this dream again. This nightmare. "+
 var HelpText = "Arrow keys: Move\n" +
 	".: Wait\n"+
 	"g: Pickup (get) item from floor\n"+
+	"i: Inventory (use/equip items).\n"+
 	"u: Use item.\n"+
-	"e: Equip item\nd: Drop item";
+	"e: Equip item\n"+
+	"d: Drop item\n"+
+	"c: Craft item";
 
 var EquipSlotHand = 0;
 var EquipSlotBody = 1;
@@ -187,6 +190,9 @@ Player.prototype.handleEvent = function(e)
 				}
 			}.bind(this));
 			break;
+		case "c"://Craft
+			game.message("Crafting not implemented yet");
+			break;
 		case "?"://Help
 			new MessageBox(this, HelpText);
 			break;
@@ -278,6 +284,8 @@ Player.prototype.move = function(x, y)
 				this.executeAction(bump_result);
 				return;
 			}
+			game.message("Your way is blocked by a " + game.map[pos].static_object.getName());
+			return
 		}
 		game.message("Your way is blocked");
 	}

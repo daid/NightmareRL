@@ -33,6 +33,8 @@ Zombie.prototype.takeDamage = function(damage_amount, source)
 Zombie.prototype.died = function(source)
 {
 	game.map[p(this.x, this.y)].floor = Corpse;
+	if (ROT.RNG.getPercentage() < 20)
+		new PieceOfBone(this.x, this.y);
 }
 
 var GiantSpider = function(x, y) {
@@ -63,6 +65,13 @@ GiantSpider.prototype.act = function()
 	game.scheduler.setDuration(this.move_delay);
 }
 GiantSpider.prototype.getGlyph = function() { return "sFE7"; }
+GiantSpider.prototype.died = function(source)
+{
+	if (game.map[p(this.x, this.y)].floor != Corpse)
+		game.map[p(this.x, this.y)].floor = Blood;
+	if (ROT.RNG.getPercentage() < 30)
+		new SpiderSilk(this.x, this.y);
+}
 
 var Ghost = function(x, y) {
 	MonsterBase.call(this, x, y);
@@ -157,4 +166,9 @@ Ghost.prototype.takeDamage = function(damage_amount, source)
 	if (this.state == "wander")
 		this.state = "want_to_flee";
 	return MonsterBase.prototype.takeDamage.call(this, damage_amount, source);
+}
+Ghost.prototype.died = function(source)
+{
+	if (ROT.RNG.getPercentage() < 50)
+		new SpiritShard(this.x, this.y);
 }

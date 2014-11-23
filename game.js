@@ -181,7 +181,10 @@ var game = {
 		else
 			this.display.drawText(0, 24, "Head: -");
 		this.display.drawText(40, 22, "Melee: " + this.player.melee_damage);
-		this.display.drawText(40, 23, "HP: " + this.player.hp + "/" + this.player.maxhp);
+		if (this.player.hp <= this.player.maxhp / 10)
+			this.display.drawText(40, 23, "HP: %c{red}" + this.player.hp + "/" + this.player.maxhp);
+		else
+			this.display.drawText(40, 23, "HP: " + this.player.hp + "/" + this.player.maxhp);
 		/*
 		for(var m=0; m<25;m++)
 			for(var n=0; n<80;n++)

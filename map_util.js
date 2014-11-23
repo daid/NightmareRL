@@ -4,6 +4,7 @@ var Wall = function(x, y)
 }
 Wall.extend(StaticObject);
 Wall.prototype.getGlyph = function() { return "#777"; }
+Wall.prototype.getName = function() { return "wall"; }
 Wall.prototype.lightPasses = function() { return false; }
 
 var Window = function(x, y)
@@ -11,10 +12,8 @@ var Window = function(x, y)
 	StaticObject.call(this, x, y);
 }
 Window.extend(StaticObject);
-Window.prototype.getGlyph = function()
-{
-	return "+777";
-}
+Window.prototype.getGlyph = function() { return "+777"; }
+Window.prototype.getName = function() { return "window"; }
 
 var Door = function(x, y)
 {
@@ -22,6 +21,7 @@ var Door = function(x, y)
 }
 Door.extend(StaticObject);
 Door.prototype.getGlyph = function() { return "+A72"; }
+Door.prototype.getName = function() { return "door"; }
 Door.prototype.lightPasses = function() { return false; }
 Door.prototype.playerBump = function(player)
 {
@@ -37,6 +37,7 @@ var Tree = function(x, y)
 }
 Tree.extend(StaticObject);
 Tree.prototype.getGlyph = function() { return "|964"; }
+Tree.prototype.getName = function() { return "tree"; }
 Tree.prototype.lightPasses = function() { return false; }
 var BigTreeL = function(x, y)
 {
@@ -44,6 +45,7 @@ var BigTreeL = function(x, y)
 }
 BigTreeL.extend(StaticObject);
 BigTreeL.prototype.getGlyph = function() { return "[964"; }
+BigTreeL.prototype.getName = function() { return "tree"; }
 BigTreeL.prototype.lightPasses = function() { return false; }
 var BigTreeR = function(x, y)
 {
@@ -51,6 +53,7 @@ var BigTreeR = function(x, y)
 }
 BigTreeR.extend(StaticObject);
 BigTreeR.prototype.getGlyph = function() { return "]964"; }
+BigTreeR.prototype.getName = function() { return "tree"; }
 BigTreeR.prototype.lightPasses = function() { return false; }
 
 var Bush = function(x, y)
@@ -59,6 +62,7 @@ var Bush = function(x, y)
 }
 Bush.extend(StaticObject);
 Bush.prototype.getGlyph = function() { return "%4B4"; }
+Bush.prototype.getName = function() { return "bush"; }
 
 var FenceH = function(x, y)
 {
@@ -66,6 +70,7 @@ var FenceH = function(x, y)
 }
 FenceH.extend(StaticObject);
 FenceH.prototype.getGlyph = function() { return "-842"; }
+FenceH.prototype.getName = function() { return "fence"; }
 FenceH.prototype.lightPasses = function() { return false; }
 var FenceV = function(x, y)
 {
@@ -73,7 +78,26 @@ var FenceV = function(x, y)
 }
 FenceV.extend(StaticObject);
 FenceV.prototype.getGlyph = function() { return "|842"; }
+FenceV.prototype.getName = function() { return "fence"; }
 FenceV.prototype.lightPasses = function() { return false; }
+
+var Altar = function(x, y)
+{
+	StaticObject.call(this, x, y);
+}
+Altar.extend(StaticObject);
+Altar.prototype.getGlyph = function() { return "=F46"; }
+Altar.prototype.getName = function() { return "altar"; }
+Altar.prototype.lightPasses = function() { return true; }
+
+var Workbench = function(x, y)
+{
+	StaticObject.call(this, x, y);
+}
+Workbench.extend(StaticObject);
+Workbench.prototype.getGlyph = function() { return "=D84"; }
+Workbench.prototype.getName = function() { return "workbench"; }
+Workbench.prototype.lightPasses = function() { return true; }
 
 function generateFloorTiles(start_x, floor_type)
 {
@@ -147,6 +171,10 @@ function addRandomItem(x, y, w, h)
 		Sword: 2,
 		BodyArmor: 2,
 		Helmet: 2,
+		
+		//Not really items, but static objects.
+		Altar: 3,
+		Workbench: 5,
 	};
 	var itemName = ROT.RNG.getWeightedValue(options);
 	new window[itemName](xx, yy);

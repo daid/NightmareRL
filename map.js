@@ -150,6 +150,10 @@ StaticObject.prototype.getGlyph = function()
 {
 	return "?F00";
 }
+StaticObject.prototype.getName = function()
+{
+	return "Unknown";
+}
 StaticObject.prototype.lightPasses = function()
 {
 	return true;

@@ -84,7 +84,7 @@ var Batteries = function(x, y)
 	
 	this.type = UsableItem;
 	this.amount = 4;
-	this.stack_size = 20;
+	this.stack_size = 12;
 }
 Batteries.extend(Item);
 Batteries.prototype.getGlyph = function() { return "\"22C"; }

@@ -15,6 +15,8 @@ Spiderweb.prototype.playerBump = function(player)
 	}
 	game.map[pos].static_object = null;
 	game.message("You tear away the spiderweb");
+	if (ROT.RNG.getPercentage() < 5)
+		new SpiderSilk(this.x, this.y);
 	return 2.0;
 }
 

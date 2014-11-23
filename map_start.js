@@ -46,7 +46,7 @@ function generateStartArea(start_x)
 	
 	new Batteries(x + 11, y + 2);
 	new Knife(x + 16, y + 2);
-	new Sword(x + 21, y + 2);
+	new Batteries(x + 21, y + 2);
 
 	new Medkit(x + 11, y + 11);
 	new Medkit(x + 16, y + 11);
