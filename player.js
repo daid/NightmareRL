@@ -189,7 +189,10 @@ var Player = function(x, y) {
 				}.bind(this));
 				break;
 			case "c"://Craft
-				game.message("Crafting not implemented yet");
+				new CraftSelect(this, function(create_name)
+				{
+					this.craftItem(create_name);
+				}.bind(this));
 				break;
 			case "?"://Help
 				new MessageBox(this, HelpText);
@@ -254,6 +257,44 @@ var Player = function(x, y) {
 				game.message("Cannot use a " + inv.getName() + " like this");
 			game.draw();
 		}
+	},
+	countItem: function(item_constructor)
+	{
+		var amount = 0;
+		for(var n=0; n<this.inventory.length; n++)
+		{
+			if (this.inventory[n] instanceof item_constructor)
+				amount += this.inventory[n].amount;
+		}
+		return amount;
+	},
+	craftItem: function(item_name)
+	{
+		for(var requirement_name in CraftRecipes[item_name])
+		{
+			var requirement = window[requirement_name]
+			var amount = CraftRecipes[item_name][requirement_name];
+			if (requirement.prototype instanceof Item)
+			{
+				for(var n=0; n<this.inventory.length; n++)
+				{
+					if (this.inventory[n] instanceof requirement)
+					{
+						var take = Math.min(amount, this.inventory[n].amount)
+						this.inventory[n].amount -= take;
+						amount -= take;
+						if (this.inventory[n].amount < 1)
+						{
+							this.inventory.splice(n, 1);
+							n--;
+						}
+					}
+				}
+			}
+		}
+		new window[item_name](this.x, this.y).pickup(this);
+		game.message("You craft a " + item_name);
+		this.executeAction(5.0);
 	},
 	move: function(x, y)
 	{
@@ -330,7 +371,7 @@ var Player = function(x, y) {
 	},
 });
 
-function ItemSelect(player, callback)
+var ItemSelect = function(player, callback)
 {
 	this._player = player;
 	this._callback = callback;
@@ -404,7 +445,7 @@ ItemSelect.prototype.handleEvent = function(e)
 	}
 }
 
-MessageBox = function(player, message)
+var MessageBox = function(player, message)
 {
 	this._player = player;
 
@@ -435,4 +476,128 @@ MessageBox.prototype.handleEvent = function(e)
 	//window.removeEventListener("keydown", this);
 	window.removeEventListener("keypress", this);
 	game.draw();
+}
+
+var CraftSelect = function(player, callback)
+{
+	this._player = player;
+	this._callback = callback
+	
+	var options = []
+	for(var name in CraftRecipes)
+	{
+		var can_craft = true;
+		for(var requirement_name in CraftRecipes[name])
+		{
+			var requirement = window[requirement_name]
+			if (requirement.prototype instanceof Item)
+			{
+				if (player.countItem(requirement) < CraftRecipes[name][requirement_name])
+				{
+					can_craft = false;
+					break;
+				}
+			}else if (requirement.prototype instanceof StaticObject)
+			{
+				var deltas = ROT.DIRS[8];
+				var found = false;
+				for(var n=0; n<deltas.length; n++)
+				{
+					var pos = p(player.x + deltas[n][0], player.y + deltas[n][1]);
+					if (pos in game.map && game.map[pos].static_object != null && game.map[pos].static_object instanceof requirement)
+					{
+						found = true;
+					}
+				}
+				if (!found)
+				{
+					can_craft = false;
+					break;
+				}
+			}else{
+				console.log("Unknown craft requirement: ", name, "needs", requirement_name);
+			}
+		}
+		if (can_craft)
+		{
+			options.push(name);
+		}
+	}
+	
+	if (options.length < 1)
+		return;
+	this._options = options;
+
+	for(var n=0;n<options.length+2;n++)
+	{
+		for(var m=0;m<60;m++)
+			game.display.draw(3+m, 4+n, " ");
+		game.display.draw(3, 4+n, "|");
+		game.display.draw(62, 4+n, "|");
+	}
+	for(var n=0;n<60;n++)
+	{
+		game.display.draw(3+n, 3, "-");
+		game.display.draw(3+n, 6+options.length, "-");
+	}
+	for(var n=0; n<options.length; n++)
+	{
+		var option = options[n];
+		var name = option + " (";
+		for(var requirement_name in CraftRecipes[option])
+		{
+			var requirement = window[requirement_name]
+			if (requirement.prototype instanceof Item)
+			{
+				if (CraftRecipes[option][requirement_name] > 1)
+					name += CraftRecipes[option][requirement_name] + "x ";
+				name += requirement_name;
+				name += ", ";
+			}
+		}
+		name = name.slice(0, name.length - 2);
+		name += ")";
+		game.display.drawText(5, 5+n, ((n+1)%10) + ") " + name);
+	}
+
+	window.removeEventListener("keydown", this._player);
+	window.removeEventListener("keypress", this._player);
+	window.addEventListener("keydown", this);
+	window.addEventListener("keypress", this);
+}
+CraftSelect.prototype.handleEvent = function(e) 
+{
+	switch(e.type)
+	{
+	case "keydown":
+		switch(e.keyCode)
+		{
+		case ROT.VK_ESCAPE:
+			window.addEventListener("keydown", this._player);
+			window.addEventListener("keypress", this._player);
+			window.removeEventListener("keydown", this);
+			window.removeEventListener("keypress", this);
+			game.draw();
+			break;
+		}
+		break;
+	case "keypress":
+		var index = parseInt(String.fromCharCode(e.charCode));
+		if (!isNaN(index))
+		{
+			if (index == 0)
+				index = 10;
+			index--;
+
+			if (index < this._options.length)
+			{
+				window.addEventListener("keydown", this._player);
+				window.addEventListener("keypress", this._player);
+				window.removeEventListener("keydown", this);
+				window.removeEventListener("keypress", this);
+				this._callback(this._options[index]);
+			}
+		}
+		break;
+	}
 }
