@@ -9,10 +9,6 @@ var game = {
 	init: function()
 	{
 		ROT.Display.Rect.cache = true;
-		Array.prototype.remove = function(item)
-		{
-			this.splice(this.indexOf(item), 1);
-		}
 		
 		this.display = new ROT.Display({spacing: 1.001, fontFamily: "Inconsolata", fontWeight: "bold"});
 		this.display.setOptions({fontSize: this.display.computeFontSize(window.innerWidth, window.innerHeight)});

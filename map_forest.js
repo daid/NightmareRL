@@ -1,25 +1,24 @@
 var Spiderweb = function(x, y)
 {
 	StaticObject.call(this, x, y);
-}
-Spiderweb.extend(StaticObject);
-Spiderweb.prototype.getGlyph = function() { return "#FFF"; }
-Spiderweb.prototype.lightPasses = function() { return true; }
-Spiderweb.prototype.playerBump = function(player)
-{
-	var pos = p(this.x,this.y);
-	if (ROT.RNG.getPercentage() < 40)
+}.extend(StaticObject, {
+	getGlyph: function() { return "#FFF"; },
+	lightPasses: function() { return true; },
+	playerBump: function(player)
 	{
-		game.message("You fail to remove the spiderweb");
+		var pos = p(this.x,this.y);
+		if (ROT.RNG.getPercentage() < 40)
+		{
+			game.message("You fail to remove the spiderweb");
+			return 2.0;
+		}
+		game.map[pos].static_object = null;
+		game.message("You tear away the spiderweb");
+		if (ROT.RNG.getPercentage() < 5)
+			new SpiderSilk(this.x, this.y);
 		return 2.0;
-	}
-	game.map[pos].static_object = null;
-	game.message("You tear away the spiderweb");
-	if (ROT.RNG.getPercentage() < 5)
-		new SpiderSilk(this.x, this.y);
-	return 2.0;
-}
-
+	},
+});
 
 function generateForestArea(start_x)
 {

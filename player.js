@@ -29,307 +29,306 @@ var Player = function(x, y) {
 	this.updateStats();
 	
 	Actor.call(this, x, y);
-}
-Player.extend(Actor);
-
-Player.prototype.act = function()
-{
-	game.engine.lock();
-	this.updateStats();
-	game.updateGlobalPlayerData();
-	game.draw();
-	window.addEventListener("keydown", this);
-	window.addEventListener("keypress", this);
-	
-	var pos = p(this.x, this.y);
-	var item_list = "";
-	for(var n=0; n<game.map[pos].items.length; n++)
+}.extend(Actor, {
+	act: function()
 	{
-		var item = game.map[pos].items[n];
-		item_list += " " + item.amount + "x " + item.getName();
-	}
-	if (item_list.length > 0)
-	{
-		item_list = "On the floor:" + item_list;
-		if (item_list.length > 80)
-			item_list = item_list.slice(0, 77) + "...";
-		game.message(item_list);
-	}
-	this.updateStats();
-}
-Player.prototype.getGlyph = function()
-{
-	return "@FFF";
-}
-Player.prototype.executeAction = function(duration)
-{
-	t = Date.now();
-	for(var n=0; n<this.equipment.length; n++)
-		if (this.equipment[n] != null)
-			this.equipment[n].tickWhenEquiped(this, duration);
-	game.scheduler.setDuration(duration);
-	window.removeEventListener("keydown", this);
-	window.removeEventListener("keypress", this);
-	game.updateGlobalPlayerData();
-	game.engine.unlock();
-	tick_time = (Date.now() - t);
-	console.log("Tick time:" + tick_time + " (" + 1000/tick_time + ")");
-}
-Player.prototype.handleEvent = function(e) 
-{
-	switch(e.type)
-	{
-	case "keydown":
-		switch(e.keyCode)
+		game.engine.lock();
+		this.updateStats();
+		game.updateGlobalPlayerData();
+		game.draw();
+		window.addEventListener("keydown", this);
+		window.addEventListener("keypress", this);
+		
+		var pos = p(this.x, this.y);
+		var item_list = "";
+		for(var n=0; n<game.map[pos].items.length; n++)
 		{
-		case ROT.VK_CLEAR: //When numlock is unlocked.
-		case ROT.VK_NUMPAD5:
-			//Wait action.
-			this.executeAction(1);
-			break;
-		case ROT.VK_END:
-		case ROT.VK_NUMPAD1:
-			this.move(this.x - 1, this.y + 1);
-			break;
-		case ROT.VK_DOWN:
-		case ROT.VK_NUMPAD2:
-			this.move(this.x, this.y + 1);
-			break;
-		case ROT.VK_PAGE_DOWN:
-		case ROT.VK_NUMPAD3:
-			this.move(this.x + 1, this.y + 1);
-			break;
-		case ROT.VK_LEFT:
-		case ROT.VK_NUMPAD4:
-			this.move(this.x - 1, this.y);
-			break;
-		case ROT.VK_RIGHT:
-		case ROT.VK_NUMPAD6:
-			this.move(this.x + 1, this.y);
-			break;
-		case ROT.VK_HOME:
-		case ROT.VK_NUMPAD7:
-			this.move(this.x - 1, this.y - 1);
-			break;
-		case ROT.VK_UP:
-		case ROT.VK_NUMPAD8:
-			this.move(this.x, this.y - 1);
-			break;
-		case ROT.VK_PAGE_UP:
-		case ROT.VK_NUMPAD9:
-			this.move(this.x + 1, this.y - 1);
-			break;
-		default:
-			for(var key in ROT)
-				if (key.indexOf("VK_") == 0 && ROT[key] == e.keyCode)
-					console.log("Unhandled key down: " + key);
-			return;
+			var item = game.map[pos].items[n];
+			item_list += " " + item.amount + "x " + item.getName();
 		}
-		break;
-	case "keypress":
-		switch(String.fromCharCode(e.charCode))
+		if (item_list.length > 0)
 		{
-		case ".":
-			//Wait action.
-			this.executeAction(1);
-			break;
-		case "g"://get/pickup
-			if (game.map[p(this.x, this.y)].items.length < 1)
+			item_list = "On the floor:" + item_list;
+			if (item_list.length > 80)
+				item_list = item_list.slice(0, 77) + "...";
+			game.message(item_list);
+		}
+		this.updateStats();
+	},
+	getGlyph: function()
+	{
+		return "@FFF";
+	},
+	executeAction: function(duration)
+	{
+		t = Date.now();
+		for(var n=0; n<this.equipment.length; n++)
+			if (this.equipment[n] != null)
+				this.equipment[n].tickWhenEquiped(this, duration);
+		game.scheduler.setDuration(duration);
+		window.removeEventListener("keydown", this);
+		window.removeEventListener("keypress", this);
+		game.updateGlobalPlayerData();
+		game.engine.unlock();
+		tick_time = (Date.now() - t);
+		console.log("Tick time:" + tick_time + " (" + 1000/tick_time + ")");
+	},
+	handleEvent: function(e) 
+	{
+		switch(e.type)
+		{
+		case "keydown":
+			switch(e.keyCode)
 			{
-				game.message("There is nothing here to pickup.");
-			}else{
-				var items = game.map[p(this.x, this.y)].items.slice(0);
-				for(var n=0; n<items.length; n++)
-				{
-					var item = items[n];
-					var cnt = item.pickup(this);
-					if (cnt > 0)
-					{
-						game.message("Picked up " + cnt + "x " + item.getName());
-					}else{
-						game.message("You cannot carry anymore");
-					}
-				}
+			case ROT.VK_CLEAR: //When numlock is unlocked.
+			case ROT.VK_NUMPAD5:
+				//Wait action.
+				this.executeAction(1);
+				break;
+			case ROT.VK_END:
+			case ROT.VK_NUMPAD1:
+				this.move(this.x - 1, this.y + 1);
+				break;
+			case ROT.VK_DOWN:
+			case ROT.VK_NUMPAD2:
+				this.move(this.x, this.y + 1);
+				break;
+			case ROT.VK_PAGE_DOWN:
+			case ROT.VK_NUMPAD3:
+				this.move(this.x + 1, this.y + 1);
+				break;
+			case ROT.VK_LEFT:
+			case ROT.VK_NUMPAD4:
+				this.move(this.x - 1, this.y);
+				break;
+			case ROT.VK_RIGHT:
+			case ROT.VK_NUMPAD6:
+				this.move(this.x + 1, this.y);
+				break;
+			case ROT.VK_HOME:
+			case ROT.VK_NUMPAD7:
+				this.move(this.x - 1, this.y - 1);
+				break;
+			case ROT.VK_UP:
+			case ROT.VK_NUMPAD8:
+				this.move(this.x, this.y - 1);
+				break;
+			case ROT.VK_PAGE_UP:
+			case ROT.VK_NUMPAD9:
+				this.move(this.x + 1, this.y - 1);
+				break;
+			default:
+				for(var key in ROT)
+					if (key.indexOf("VK_") == 0 && ROT[key] == e.keyCode)
+						console.log("Unhandled key down: " + key);
+				return;
 			}
 			break;
-		case "d"://Drop
-			new ItemSelect(this, function(index) {
-				this.inventory[index].drop(this);
+		case "keypress":
+			switch(String.fromCharCode(e.charCode))
+			{
+			case ".":
+				//Wait action.
 				this.executeAction(1);
-			}.bind(this));
-			break;
-		case "e"://Equip
-			new ItemSelect(this, function(index) {
-				var inv = this.inventory[index];
-				this.equipItem(inv);
-			}.bind(this));
-			break;
-		case "u"://Use
-			new ItemSelect(this, function(index) {
-				var inv = this.inventory[index];
-				this.useItem(inv);
-			}.bind(this));
-			break;
-		case "i"://Inventory
-			new ItemSelect(this, function(index) {
-				var inv = this.inventory[index];
-				switch(inv.type)
+				break;
+			case "g"://get/pickup
+				if (game.map[p(this.x, this.y)].items.length < 1)
 				{
-				case EquipmentHandItem:
-				case EquipmentBodyItem:
-				case EquipmentHeadItem:
-					this.equipItem(inv);
-					break;
-				case UsableItem:
-					this.useItem(inv);
-					break;
-				case MiscItem:
-				default:
-					game.draw();
-					break;
+					game.message("There is nothing here to pickup.");
+				}else{
+					var items = game.map[p(this.x, this.y)].items.slice(0);
+					for(var n=0; n<items.length; n++)
+					{
+						var item = items[n];
+						var cnt = item.pickup(this);
+						if (cnt > 0)
+						{
+							game.message("Picked up " + cnt + "x " + item.getName());
+						}else{
+							game.message("You cannot carry anymore");
+						}
+					}
 				}
-			}.bind(this));
+				break;
+			case "d"://Drop
+				new ItemSelect(this, function(index) {
+					this.inventory[index].drop(this);
+					this.executeAction(1);
+				}.bind(this));
+				break;
+			case "e"://Equip
+				new ItemSelect(this, function(index) {
+					var inv = this.inventory[index];
+					this.equipItem(inv);
+				}.bind(this));
+				break;
+			case "u"://Use
+				new ItemSelect(this, function(index) {
+					var inv = this.inventory[index];
+					this.useItem(inv);
+				}.bind(this));
+				break;
+			case "i"://Inventory
+				new ItemSelect(this, function(index) {
+					var inv = this.inventory[index];
+					switch(inv.type)
+					{
+					case EquipmentHandItem:
+					case EquipmentBodyItem:
+					case EquipmentHeadItem:
+						this.equipItem(inv);
+						break;
+					case UsableItem:
+						this.useItem(inv);
+						break;
+					case MiscItem:
+					default:
+						game.draw();
+						break;
+					}
+				}.bind(this));
+				break;
+			case "c"://Craft
+				game.message("Crafting not implemented yet");
+				break;
+			case "?"://Help
+				new MessageBox(this, HelpText);
+				break;
+			case "^"://Toggle debug mode.
+				game.debug = !game.debug;
+				game.draw();
+				break;
+			default:
+				console.log("Unhandled key pressed: " + String.fromCharCode(e.charCode));
+				return;
+			}
 			break;
-		case "c"://Craft
-			game.message("Crafting not implemented yet");
-			break;
-		case "?"://Help
-			new MessageBox(this, HelpText);
-			break;
-		case "^"://Toggle debug mode.
-			game.debug = !game.debug;
-			game.draw();
-			break;
-		default:
-			console.log("Unhandled key pressed: " + String.fromCharCode(e.charCode));
-			return;
 		}
-		break;
-	}
-	e.preventDefault();
-}
-Player.prototype.equipItem = function(inv)
-{
-	switch(inv.type)
+		e.preventDefault();
+	},
+	equipItem: function(inv)
 	{
-	case EquipmentHandItem:
-	case EquipmentBodyItem:
-	case EquipmentHeadItem:
-		var slot;
 		switch(inv.type)
 		{
 		case EquipmentHandItem:
-			game.message("You take the " + inv.getName() + " in your hand");
-			slot = EquipSlotHand;
-			break;
 		case EquipmentBodyItem:
-			game.message("You wear the " + inv.getName());
-			slot = EquipSlotBody;
-			break;
 		case EquipmentHeadItem:
-			game.message("You put the " + inv.getName() + " on your head");
-			slot = EquipSlotHead;
+			var slot;
+			switch(inv.type)
+			{
+			case EquipmentHandItem:
+				game.message("You take the " + inv.getName() + " in your hand");
+				slot = EquipSlotHand;
+				break;
+			case EquipmentBodyItem:
+				game.message("You wear the " + inv.getName());
+				slot = EquipSlotBody;
+				break;
+			case EquipmentHeadItem:
+				game.message("You put the " + inv.getName() + " on your head");
+				slot = EquipSlotHead;
+				break;
+			}
+			this.inventory.remove(inv);
+			if (this.equipment[slot] != null)
+				this.inventory.push(this.equipment[slot]);
+			this.equipment[slot] = inv;
+			this.updateStats();
+			this.executeAction(2.5);
 			break;
+		default:
+			game.draw();
+			game.message("You cannot equip a " + inv.getName());
 		}
-		this.inventory.remove(inv);
-		if (this.equipment[slot] != null)
-			this.inventory.push(this.equipment[slot]);
-		this.equipment[slot] = inv;
-		this.updateStats();
-		this.executeAction(2.5);
-		break;
-	default:
-		game.draw();
-		game.message("You cannot equip a " + inv.getName());
-	}
-}
-Player.prototype.useItem = function(inv)
-{
-	var duration = inv.useItem(this);
-	if (inv.amount < 1)
-		this.inventory.remove(inv);
-	if (duration > 0)
+	},
+	useItem: function(inv)
 	{
-		this.executeAction(duration);
-	}else{
-		if (duration < 0)
-			game.message("Cannot use a " + inv.getName() + " like this");
-		game.draw();
-	}
-}
-Player.prototype.move = function(x, y)
-{
-	if (x > game.view_offset_x + 79)
-		return;
-	if (game.spaceIsFree(x, y))
-	{
-		game.moveActor(this, x, y);
-		this.executeAction(1);
-	}else{
-		var pos = p(x, y);
-		if (pos in game.map && game.map[pos].actor != null)
+		var duration = inv.useItem(this);
+		if (inv.amount < 1)
+			this.inventory.remove(inv);
+		if (duration > 0)
 		{
-			var bump_result = game.map[pos].actor.playerBump(this);
-			if (bump_result > 0)
-			{
-				this.executeAction(bump_result);
-				return;
-			}
+			this.executeAction(duration);
+		}else{
+			if (duration < 0)
+				game.message("Cannot use a " + inv.getName() + " like this");
+			game.draw();
 		}
-		if (pos in game.map && game.map[pos].static_object != null)
-		{
-			var bump_result = game.map[pos].static_object.playerBump(this);
-			if (bump_result > 0)
-			{
-				this.executeAction(bump_result);
-				return;
-			}
-			game.message("Your way is blocked by a " + game.map[pos].static_object.getName());
-			return
-		}
-		game.message("Your way is blocked");
-	}
-}
-Player.prototype.updateStats = function()
-{
-	this.maxhp = this.base_maxhp;
-	this.protection = 0;
-	
-	this.light_range = 1;
-	this.melee_damage = "1d2";
-	this.melee_accuracy = 10;
-	this.melee_attack_delay = 1.0;
-
-	for(var n=0; n<this.equipment.length; n++)
-		if (this.equipment[n] != null)
-			this.equipment[n].updatePlayerWhenEquiped(this);
-
-	if (this.hp > this.maxhp)
-		this.hp = this.maxhp;
-}
-Player.prototype.takeDamage = function(damage_amount, source)
-{
-	if (game.map[p(this.x, this.y)].floor != Corpse)
-		game.map[p(this.x, this.y)].floor = Blood;
-	damage_amount -= this.protection;
-	if (damage_amount < 1)
-		damage_amount = 1;
-	
-	for(var n=0; n<this.equipment.length; n++)
-		if (this.equipment[n] != null)
-			this.equipment[n].takeDamage(this, damage_amount, source);
-	
-	this.hp -= damage_amount;
-	if (this.hp < 1)
+	},
+	move: function(x, y)
 	{
-		game.map[p(this.x, this.y)].floor = Corpse;
-		game.removeActor(this);
-		game.engine.lock();
-		game.draw();
-	}
-	
-	return damage_amount;
-}
+		if (x > game.view_offset_x + 79)
+			return;
+		if (game.spaceIsFree(x, y))
+		{
+			game.moveActor(this, x, y);
+			this.executeAction(1);
+		}else{
+			var pos = p(x, y);
+			if (pos in game.map && game.map[pos].actor != null)
+			{
+				var bump_result = game.map[pos].actor.playerBump(this);
+				if (bump_result > 0)
+				{
+					this.executeAction(bump_result);
+					return;
+				}
+			}
+			if (pos in game.map && game.map[pos].static_object != null)
+			{
+				var bump_result = game.map[pos].static_object.playerBump(this);
+				if (bump_result > 0)
+				{
+					this.executeAction(bump_result);
+					return;
+				}
+				game.message("Your way is blocked by a " + game.map[pos].static_object.getName());
+				return
+			}
+			game.message("Your way is blocked");
+		}
+	},
+	updateStats: function()
+	{
+		this.maxhp = this.base_maxhp;
+		this.protection = 0;
+		
+		this.light_range = 1;
+		this.melee_damage = "1d2";
+		this.melee_accuracy = 10;
+		this.melee_attack_delay = 1.0;
+
+		for(var n=0; n<this.equipment.length; n++)
+			if (this.equipment[n] != null)
+				this.equipment[n].updatePlayerWhenEquiped(this);
+
+		if (this.hp > this.maxhp)
+			this.hp = this.maxhp;
+	},
+	takeDamage: function(damage_amount, source)
+	{
+		if (game.map[p(this.x, this.y)].floor != Corpse)
+			game.map[p(this.x, this.y)].floor = Blood;
+		damage_amount -= this.protection;
+		if (damage_amount < 1)
+			damage_amount = 1;
+		
+		for(var n=0; n<this.equipment.length; n++)
+			if (this.equipment[n] != null)
+				this.equipment[n].takeDamage(this, damage_amount, source);
+		
+		this.hp -= damage_amount;
+		if (this.hp < 1)
+		{
+			game.map[p(this.x, this.y)].floor = Corpse;
+			game.removeActor(this);
+			game.engine.lock();
+			game.draw();
+		}
+		
+		return damage_amount;
+	},
+});
 
 function ItemSelect(player, callback)
 {

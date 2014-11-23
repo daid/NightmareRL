@@ -1,103 +1,104 @@
 var Wall = function(x, y)
 {
 	StaticObject.call(this, x, y);
-}
-Wall.extend(StaticObject);
-Wall.prototype.getGlyph = function() { return "#777"; }
-Wall.prototype.getName = function() { return "wall"; }
-Wall.prototype.lightPasses = function() { return false; }
+}.extend(StaticObject, {
+	getGlyph: function() { return "#777"; },
+	getName: function() { return "wall"; },
+	lightPasses: function() { return false; },
+});
 
 var Window = function(x, y)
 {
 	StaticObject.call(this, x, y);
-}
-Window.extend(StaticObject);
-Window.prototype.getGlyph = function() { return "+777"; }
-Window.prototype.getName = function() { return "window"; }
+}.extend(StaticObject, {
+	getGlyph: function() { return "+777"; },
+	getName: function() { return "window"; },
+});
 
 var Door = function(x, y)
 {
 	StaticObject.call(this, x, y);
-}
-Door.extend(StaticObject);
-Door.prototype.getGlyph = function() { return "+A72"; }
-Door.prototype.getName = function() { return "door"; }
-Door.prototype.lightPasses = function() { return false; }
-Door.prototype.playerBump = function(player)
-{
-	var pos = p(this.x,this.y);
-	game.map[pos].static_object = null;
-	game.message("You open the door");
-	return 1.5;
-}
+}.extend(StaticObject, {
+	getGlyph: function() { return "+A72"; },
+	getName: function() { return "door"; },
+	lightPasses: function() { return false; },
+	playerBump: function(player)
+	{
+		var pos = p(this.x,this.y);
+		game.map[pos].static_object = null;
+		game.message("You open the door");
+		return 1.5;
+	},
+});
 
 var Tree = function(x, y)
 {
 	StaticObject.call(this, x, y);
-}
-Tree.extend(StaticObject);
-Tree.prototype.getGlyph = function() { return "|964"; }
-Tree.prototype.getName = function() { return "tree"; }
-Tree.prototype.lightPasses = function() { return false; }
+}.extend(StaticObject, {
+	getGlyph: function() { return "|964"; },
+	getName: function() { return "tree"; },
+	lightPasses: function() { return false; },
+});
+
 var BigTreeL = function(x, y)
 {
 	StaticObject.call(this, x, y);
-}
-BigTreeL.extend(StaticObject);
-BigTreeL.prototype.getGlyph = function() { return "[964"; }
-BigTreeL.prototype.getName = function() { return "tree"; }
-BigTreeL.prototype.lightPasses = function() { return false; }
+}.extend(StaticObject, {
+	getGlyph: function() { return "[964"; },
+	getName: function() { return "tree"; },
+	lightPasses: function() { return false; },
+});
 var BigTreeR = function(x, y)
 {
 	StaticObject.call(this, x, y);
-}
-BigTreeR.extend(StaticObject);
-BigTreeR.prototype.getGlyph = function() { return "]964"; }
-BigTreeR.prototype.getName = function() { return "tree"; }
-BigTreeR.prototype.lightPasses = function() { return false; }
+}.extend(StaticObject, {
+	getGlyph: function() { return "]964"; },
+	getName: function() { return "tree"; },
+	lightPasses: function() { return false; },
+});
 
 var Bush = function(x, y)
 {
 	StaticObject.call(this, x, y);
-}
-Bush.extend(StaticObject);
-Bush.prototype.getGlyph = function() { return "%4B4"; }
-Bush.prototype.getName = function() { return "bush"; }
+}.extend(StaticObject, {
+	getGlyph: function() { return "%4B4"; },
+	getName: function() { return "bush"; },
+});
 
 var FenceH = function(x, y)
 {
 	StaticObject.call(this, x, y);
-}
-FenceH.extend(StaticObject);
-FenceH.prototype.getGlyph = function() { return "-842"; }
-FenceH.prototype.getName = function() { return "fence"; }
-FenceH.prototype.lightPasses = function() { return false; }
+}.extend(StaticObject, {
+	getGlyph: function() { return "-842"; },
+	getName: function() { return "fence"; },
+	lightPasses: function() { return false; },
+});
 var FenceV = function(x, y)
 {
 	StaticObject.call(this, x, y);
-}
-FenceV.extend(StaticObject);
-FenceV.prototype.getGlyph = function() { return "|842"; }
-FenceV.prototype.getName = function() { return "fence"; }
-FenceV.prototype.lightPasses = function() { return false; }
+}.extend(StaticObject, {
+	getGlyph: function() { return "|842"; },
+	getName: function() { return "fence"; },
+	lightPasses: function() { return false; },
+});
 
 var Altar = function(x, y)
 {
 	StaticObject.call(this, x, y);
-}
-Altar.extend(StaticObject);
-Altar.prototype.getGlyph = function() { return "=F46"; }
-Altar.prototype.getName = function() { return "altar"; }
-Altar.prototype.lightPasses = function() { return true; }
+}.extend(StaticObject, {
+	getGlyph: function() { return "=F46"; },
+	getName: function() { return "altar"; },
+	lightPasses: function() { return true; },
+});
 
 var Workbench = function(x, y)
 {
 	StaticObject.call(this, x, y);
-}
-Workbench.extend(StaticObject);
-Workbench.prototype.getGlyph = function() { return "=D84"; }
-Workbench.prototype.getName = function() { return "workbench"; }
-Workbench.prototype.lightPasses = function() { return true; }
+}.extend(StaticObject, {
+	getGlyph: function() { return "=D84"; },
+	getName: function() { return "workbench"; },
+	lightPasses: function() { return true; },
+});
 
 function generateFloorTiles(start_x, floor_type)
 {
