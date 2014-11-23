@@ -170,5 +170,5 @@ Ghost.prototype.takeDamage = function(damage_amount, source)
 Ghost.prototype.died = function(source)
 {
 	if (ROT.RNG.getPercentage() < 50)
-		new SpiritShard(this.x, this.y);
+		new AstralShard(this.x, this.y);
 }
