@@ -66,26 +66,44 @@ function generateHouseArea(start_x)
 	generateWallBox(x, y, w, h);
 	setFloorBox(x, y, w, h, Stone);
 	splitBox(x, y, w, h);
+
+	if (ROT.RNG.getPercentage() < 70)
+	{
+		var fence_x = x+ROT.RNG.getUniformInt(1, w-2);
+		for(var n=0; n<y; n++)
+			new FenceV(fence_x, n);
+		for(var n=y+h; n<20; n++)
+			new FenceV(fence_x, n);
+	}
+
 	for(var n=0; n<3;n++)
 	{
 		placeRandomInWall(x, y, false, h, Window);
 		placeRandomInWall(x+w-1, y, false, h, Window);
 	}
-	placeRandomInWall(x, y, false, h, Door);
-	placeRandomInWall(x, y, false, h, Door);
-	placeRandomInWall(x+w-1, y, false, h, Door);
-	placeRandomInWall(x+w-1, y, false, h, Door);
-
 	for(var n=0; n<5; n++)
 	{
 		placeRandomInWall(x, y, true, w, Window);
 		placeRandomInWall(x, y+h-1, true, w, Window);
 	}
+
+	placeRandomInWall(x, y, false, h, Door);
+	placeRandomInWall(x, y, false, h, Door);
+	placeRandomInWall(x+w-1, y, false, h, Door);
+	placeRandomInWall(x+w-1, y, false, h, Door);
+	placeRandomInWall(x, y, true, w, Door);
+	placeRandomInWall(x, y+h-1, true, w, Door);
+	
 	
 	for(var n=0; n<3; n++)
 	{
 		var g = new Ghost(x+ROT.RNG.getUniformInt(1, w-2), y+ROT.RNG.getUniformInt(1, h-2));
 		g.move_area = [x+1, y+1, w-2, h-2];
+	}
+	for(var n=0; n<3; n++)
+	{
+		var pos = randomEmptySpot(x, y, w, h);
+		new Zombie(pos[0], pos[1]);
 	}
 
 	for(var n=0; n<2; n++)

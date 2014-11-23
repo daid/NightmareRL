@@ -1,3 +1,79 @@
+var Wall = function(x, y)
+{
+	StaticObject.call(this, x, y);
+}
+Wall.extend(StaticObject);
+Wall.prototype.getGlyph = function() { return "#777"; }
+Wall.prototype.lightPasses = function() { return false; }
+
+var Window = function(x, y)
+{
+	StaticObject.call(this, x, y);
+}
+Window.extend(StaticObject);
+Window.prototype.getGlyph = function()
+{
+	return "+777";
+}
+
+var Door = function(x, y)
+{
+	StaticObject.call(this, x, y);
+}
+Door.extend(StaticObject);
+Door.prototype.getGlyph = function() { return "+A72"; }
+Door.prototype.lightPasses = function() { return false; }
+Door.prototype.playerBump = function(player)
+{
+	var pos = p(this.x,this.y);
+	game.map[pos].static_object = null;
+	game.message("You open the door");
+	return 1.5;
+}
+
+var Tree = function(x, y)
+{
+	StaticObject.call(this, x, y);
+}
+Tree.extend(StaticObject);
+Tree.prototype.getGlyph = function() { return "|964"; }
+Tree.prototype.lightPasses = function() { return false; }
+var BigTreeL = function(x, y)
+{
+	StaticObject.call(this, x, y);
+}
+BigTreeL.extend(StaticObject);
+BigTreeL.prototype.getGlyph = function() { return "[964"; }
+BigTreeL.prototype.lightPasses = function() { return false; }
+var BigTreeR = function(x, y)
+{
+	StaticObject.call(this, x, y);
+}
+BigTreeR.extend(StaticObject);
+BigTreeR.prototype.getGlyph = function() { return "]964"; }
+BigTreeR.prototype.lightPasses = function() { return false; }
+
+var Bush = function(x, y)
+{
+	StaticObject.call(this, x, y);
+}
+Bush.extend(StaticObject);
+Bush.prototype.getGlyph = function() { return "%4B4"; }
+
+var FenceH = function(x, y)
+{
+	StaticObject.call(this, x, y);
+}
+FenceH.extend(StaticObject);
+FenceH.prototype.getGlyph = function() { return "-842"; }
+FenceH.prototype.lightPasses = function() { return false; }
+var FenceV = function(x, y)
+{
+	StaticObject.call(this, x, y);
+}
+FenceV.extend(StaticObject);
+FenceV.prototype.getGlyph = function() { return "|842"; }
+FenceV.prototype.lightPasses = function() { return false; }
 
 function generateFloorTiles(start_x, floor_type)
 {
@@ -63,13 +139,27 @@ function addRandomItem(x, y, w, h)
 	}while(pos in game.map && game.map[pos].static_object != null);
 	
 	var options = {
-		Medkit: 10,
+		Medkit: 7,
 		Batteries: 2,
-		Knife: 5,
-		Sword: 2,
 		HeadLight: 1,
 		FlashLight: 5,
+		Knife: 5,
+		Sword: 2,
+		BodyArmor: 2,
+		Helmet: 2,
 	};
 	var itemName = ROT.RNG.getWeightedValue(options);
 	new window[itemName](xx, yy);
+}
+
+function randomEmptySpot(x, y, w, h)
+{
+	do
+	{
+		var xx = ROT.RNG.getUniformInt(x, x+w-1);
+		var yy = ROT.RNG.getUniformInt(y, y+h-1);
+		var pos = p(xx, yy);
+	}while(pos in game.map && game.map[pos].static_object != null && game.map[pos].actor != null);
+	
+	return [xx, yy];
 }

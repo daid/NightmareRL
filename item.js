@@ -19,6 +19,7 @@ Item.prototype.getGlyph = function() { return "?080"; }
 Item.prototype.getName = function() { return "???"; }
 Item.prototype.updatePlayerWhenEquiped = function(player) { }
 Item.prototype.tickWhenEquiped = function(player, delay) { }
+Item.prototype.takeDamage = function(player, damage_amount, source) { }
 Item.prototype.useItem = function(player) { return -1; }
 
 Item.prototype.pickup = function(player)

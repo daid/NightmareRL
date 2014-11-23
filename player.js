@@ -305,6 +305,10 @@ Player.prototype.takeDamage = function(damage_amount, source)
 	if (damage_amount < 1)
 		damage_amount = 1;
 	
+	for(var n=0; n<this.equipment.length; n++)
+		if (this.equipment[n] != null)
+			this.equipment[n].takeDamage(this, damage_amount, source);
+	
 	this.hp -= damage_amount;
 	if (this.hp < 1)
 	{

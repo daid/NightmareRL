@@ -1,13 +1,13 @@
 var Zombie = function(x, y) {
 	MonsterBase.call(this, x, y);
 	
-	this.hp = 10;
+	this.hp = 15;
 	this.protection = 0;
 	this.melee_damage = "1d3";
 	this.melee_accuracy = 7;
 	this.melee_attack_delay = 1.5;
 	
-	this.move_delay = 1.2;
+	this.move_delay = 1.5;
 	this.name = "Zombie";
 }
 Zombie.extend(MonsterBase);
@@ -23,7 +23,7 @@ Zombie.prototype.act = function()
 	
 	game.scheduler.setDuration(this.move_delay);
 }
-Zombie.prototype.getGlyph = function() { return "ZDDD"; }
+Zombie.prototype.getGlyph = function() { return "zDDD"; }
 
 var GiantSpider = function(x, y) {
 	MonsterBase.call(this, x, y);
