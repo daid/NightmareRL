@@ -301,6 +301,8 @@ Player.prototype.updateStats = function()
 }
 Player.prototype.takeDamage = function(damage_amount, source)
 {
+	if (game.map[p(this.x, this.y)].floor != Corpse)
+		game.map[p(this.x, this.y)].floor = Blood;
 	damage_amount -= this.protection;
 	if (damage_amount < 1)
 		damage_amount = 1;
@@ -312,6 +314,7 @@ Player.prototype.takeDamage = function(damage_amount, source)
 	this.hp -= damage_amount;
 	if (this.hp < 1)
 	{
+		game.map[p(this.x, this.y)].floor = Corpse;
 		game.removeActor(this);
 		game.engine.lock();
 		game.draw();

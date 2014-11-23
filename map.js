@@ -2,6 +2,8 @@ var Grass = 0;
 var DarkGrass = 1;
 var Dirt = 2;
 var Stone = 3;
+var Blood = 4;
+var Corpse = 5;
 
 function p(x, y)
 {
@@ -34,6 +36,8 @@ MapTile.prototype.getGlyph = function()
 	case DarkGrass: return ".060";
 	case Dirt: return ".852";
 	case Stone: return ".444";
+	case Blood: return ".A00";
+	case Corpse: return "%A00";
 	}
 	return "?888";
 }

@@ -24,6 +24,16 @@ Zombie.prototype.act = function()
 	game.scheduler.setDuration(this.move_delay);
 }
 Zombie.prototype.getGlyph = function() { return "zDDD"; }
+Zombie.prototype.takeDamage = function(damage_amount, source)
+{
+	if (game.map[p(this.x, this.y)].floor != Corpse)
+		game.map[p(this.x, this.y)].floor = Blood;
+	return MonsterBase.prototype.takeDamage.call(this, damage_amount, source);
+}
+Zombie.prototype.died = function(source)
+{
+	game.map[p(this.x, this.y)].floor = Corpse;
+}
 
 var GiantSpider = function(x, y) {
 	MonsterBase.call(this, x, y);
