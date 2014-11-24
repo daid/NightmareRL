@@ -9,6 +9,7 @@ var Zombie = function(x, y) {
 	
 	this.move_delay = 1.5;
 	this.name = "Zombie";
+	this.spawn_score = 2;
 }.extend(MonsterBase, {
 	getGlyph: function() { return "zDDD"; },
 	act: function()
@@ -33,7 +34,7 @@ var Zombie = function(x, y) {
 	{
 		game.map[p(this.x, this.y)].floor = Corpse;
 		if (ROT.RNG.getPercentage() < 20)
-			new PieceOfBone(this.x, this.y);
+			new PieceOfBone(this.x, this.y).amount = ROT.RNG.getUniformInt(1, 2);
 	},
 });
 
@@ -48,6 +49,7 @@ var GiantSpider = function(x, y) {
 	
 	this.move_delay = 1.0;
 	this.name = "Giant spider";
+	this.spawn_score = 3;
 }.extend(MonsterBase, {
 	act: function()
 	{
@@ -69,7 +71,7 @@ var GiantSpider = function(x, y) {
 		if (game.map[p(this.x, this.y)].floor != Corpse)
 			game.map[p(this.x, this.y)].floor = Blood;
 		if (ROT.RNG.getPercentage() < 30)
-			new SpiderSilk(this.x, this.y);
+			new SpiderSilk(this.x, this.y).amount = ROT.RNG.getUniformInt(1, 2);
 	},
 });
 
@@ -87,6 +89,7 @@ var Ghost = function(x, y) {
 	this.state = "wander";
 	
 	this.move_area = null;
+	this.spawn_score = 2;
 }.extend(MonsterBase, {
 	act: function()
 	{
@@ -169,6 +172,6 @@ var Ghost = function(x, y) {
 	died: function(source)
 	{
 		if (ROT.RNG.getPercentage() < 50)
-			new AstralShard(this.x, this.y);
+			new AstralShard(this.x, this.y).amount = ROT.RNG.getUniformInt(1, 2);
 	},
 });

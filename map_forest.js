@@ -20,7 +20,7 @@ var Spiderweb = function(x, y)
 	},
 });
 
-function generateForestArea(start_x)
+function generateForestArea(start_x, area_number)
 {
 	generateFloorTiles(start_x, Grass);
 	
@@ -64,21 +64,31 @@ function generateForestArea(start_x)
 		new BigTreeL(x, y+1);
 		new BigTreeR(x+1, y+1);
 	}
-	for(var n=0; n<6; n++)
-	{
-		do
-		{
-			var x = start_x + ROT.RNG.getUniformInt(2, 32);
-			var y = ROT.RNG.getUniformInt(0, 19);
-			
-			var pos = p(x, y);
-		}while(!(pos in game.map) || game.map[pos].static_object != null || game.map[pos].actor != null)
-
-		new GiantSpider(x, y);
-	}
 	
-	for(var n=0; n<3; n++)
-		addRandomItem(start_x + 2, 0, 30, 20);
+	var monster_options = {
+		GiantSpider: 20,
+		Ghost: 1,
+		Zombie: 1,
+	};
+	
+	var x = start_x + 2;
+	var y = 0;
+	var w = 30;
+	var h = 20;
+	var monster_score = Math.floor(6 * Math.sqrt(area_number));
+	while(monster_score > 0)
+	{
+		var monster_name = ROT.RNG.getWeightedValue(monster_options);
+		var pos = randomEmptySpot(x, y, w, h);
+		var monster = new window[monster_name](pos[0], pos[1]);
+		if (monster_name == "Ghost")
+			monster.move_area = [x+1, y+1, w-2, h-2];
+		monster_score -= monster.spawn_score;
+	}
+
+	var item_count = 5 + Math.floor(area_number / 6)
+	for(var n=0; n<2; n++)
+		addRandomItem(x, y, w, h);
 	
 	for(var n=0; n<10; n++)
 	{

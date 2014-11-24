@@ -77,6 +77,7 @@ var HeadLight = function(x, y)
 	this.type = EquipmentHeadItem;
 }.extend(ElectricalLightbringerBase, {
 	getGlyph: function() { return "*CC2"; },
+	postCraft: function(player) { this.charge = 100; },
 });
 
 var Batteries = function(x, y)

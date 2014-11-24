@@ -29,6 +29,7 @@ var game = {
 		this.the_shadow = new TheShadow();
 		this.messageLog = [];
 		this.view_offset_x = 0;
+		this.map_index = 0;
 		
 		for(var x=0; x<80; x++)
 		{
@@ -36,7 +37,7 @@ var game = {
 			{
 				var pos = p(x,y);
 				if (!(pos in this.map))
-					generateMapArea(x);
+					generateMapArea(x, this.map_index++);
 			}
 		}
 		
@@ -225,7 +226,7 @@ var game = {
 		{
 			var pos = p(this.view_offset_x + 79, y);
 			if (!(pos in this.map))
-				generateMapArea(this.view_offset_x + 79);
+				generateMapArea(this.view_offset_x + 79, this.map_index++);
 		}
 	},
 }

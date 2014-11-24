@@ -42,16 +42,16 @@ MapTile.prototype.getGlyph = function()
 	return "?888";
 }
 
-function generateMapArea(start_x)
+function generateMapArea(start_x, area_number)
 {
-	if (start_x == 0)
+	if (area_number == 0)
 	{
 		generateStartArea(start_x);
 	}else{
-		if ((start_x / 30 % 2))
-			generateHouseArea(start_x);
+		if ((area_number % 2) == 1)
+			generateHouseArea(start_x, area_number);
 		else
-			generateForestArea(start_x);
+			generateForestArea(start_x, area_number);
 		//for(var n=0; n<2; n++)
 		//	new PoesIsBlokje(start_x + ROT.RNG.getUniformInt(0, 30), ROT.RNG.getUniformInt(0, 19));
 	}

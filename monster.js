@@ -10,6 +10,7 @@ var MonsterBase = function(x, y) {
 	
 	this.move_delay = 1.0;
 	this.name = "Unknown";
+	this.spawn_score = 1;
 	
 	game.addActor(this);
 }.extend(Actor, {

@@ -301,7 +301,9 @@ var Player = function(x, y) {
 				}
 			}
 		}
-		new window[item_name](this.x, this.y).pickup(this);
+		var item = new window[item_name](this.x, this.y);
+		item.postCraft(this);
+		item.pickup(this);
 		game.message("You craft a " + item_name);
 		this.executeAction(5.0);
 	},

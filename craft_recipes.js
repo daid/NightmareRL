@@ -14,4 +14,10 @@ var CraftRecipes = {
 		AstralShard: 4,
 		SpiderSilk: 1,
 	},
+	HeadLight: {
+		Workbench: true,
+		Helmet: 1,
+		FlashLight: 1,
+		Batteries: 1,
+	},
 };

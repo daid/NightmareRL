@@ -1,5 +1,5 @@
 
-function generateHouseArea(start_x)
+function generateHouseArea(start_x, area_number)
 {
 	function placeRandomInWall(x, y, dir, size, type)
 	{
@@ -94,18 +94,23 @@ function generateHouseArea(start_x)
 	placeRandomInWall(x, y, true, w, Door);
 	placeRandomInWall(x, y+h-1, true, w, Door);
 	
+	var monster_options = {
+		Zombie: 8,
+		Ghost: 10,
+	};
 	
-	for(var n=0; n<3; n++)
+	var monster_score = Math.floor(6 * Math.sqrt(area_number));
+	while(monster_score > 0)
 	{
-		var g = new Ghost(x+ROT.RNG.getUniformInt(1, w-2), y+ROT.RNG.getUniformInt(1, h-2));
-		g.move_area = [x+1, y+1, w-2, h-2];
-	}
-	for(var n=0; n<3; n++)
-	{
+		var monster_name = ROT.RNG.getWeightedValue(monster_options);
 		var pos = randomEmptySpot(x, y, w, h);
-		new Zombie(pos[0], pos[1]);
+		var monster = new window[monster_name](pos[0], pos[1]);
+		if (monster_name == "Ghost")
+			monster.move_area = [x+1, y+1, w-2, h-2];
+		monster_score -= monster.spawn_score;
 	}
 
+	var item_count = 5 + Math.floor(area_number / 6)
 	for(var n=0; n<2; n++)
 		addRandomItem(x, y, w, h);
 }
