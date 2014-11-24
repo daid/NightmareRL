@@ -199,6 +199,15 @@ var Player = function(x, y) {
 				break;
 			case "^"://Toggle debug mode.
 				game.debug = !game.debug;
+				if (game.debug)
+				{
+					new Knife(this.x, this.y);
+					new PieceOfBone(this.x, this.y).amount = 10;
+					new AstralShard(this.x, this.y).amount = 10;
+					new SpiderSilk(this.x, this.y).amount = 10;
+					new Altar(this.x + 1, this.y);
+					new Workbench(this.x - 1, this.y);
+				}
 				game.draw();
 				break;
 			default:
@@ -527,19 +536,9 @@ var CraftSelect = function(player, callback)
 	if (options.length < 1)
 		return;
 	this._options = options;
+	var names = []
+	var cnt = 0;
 
-	for(var n=0;n<options.length+2;n++)
-	{
-		for(var m=0;m<60;m++)
-			game.display.draw(3+m, 4+n, " ");
-		game.display.draw(3, 4+n, "|");
-		game.display.draw(62, 4+n, "|");
-	}
-	for(var n=0;n<60;n++)
-	{
-		game.display.draw(3+n, 3, "-");
-		game.display.draw(3+n, 6+options.length, "-");
-	}
 	for(var n=0; n<options.length; n++)
 	{
 		var option = options[n];
@@ -557,7 +556,27 @@ var CraftSelect = function(player, callback)
 		}
 		name = name.slice(0, name.length - 2);
 		name += ")";
-		game.display.drawText(5, 5+n, ((n+1)%10) + ") " + name);
+		names.push(name);
+		cnt += game.display.drawText(8, 5+n, name, 53);
+	}
+
+	for(var n=0;n<cnt+2;n++)
+	{
+		for(var m=0;m<60;m++)
+			game.display.draw(3+m, 4+n, " ");
+		game.display.draw(3, 4+n, "|");
+		game.display.draw(62, 4+n, "|");
+	}
+	for(var n=0;n<60;n++)
+	{
+		game.display.draw(3+n, 3, "-");
+		game.display.draw(3+n, 6+cnt, "-");
+	}
+	var y = 5;
+	for(var n=0; n<options.length; n++)
+	{
+		game.display.drawText(5, y, ((n+1)%10) + ")");
+		y += game.display.drawText(8, y, names[n], 53);
 	}
 
 	window.removeEventListener("keydown", this._player);

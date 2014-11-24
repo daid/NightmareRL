@@ -16,3 +16,15 @@ Function.prototype.extend = function(parent, data)
 	}
 	return this;
 }
+
+if (!Math.sign)
+{
+	Math.sign = function(x){
+		x = +x;
+		if (x === 0 || isNaN(x))
+			return x;
+		if (x > 0)
+			return 1;
+		return -1;
+	}
+}
