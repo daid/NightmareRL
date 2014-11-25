@@ -43,3 +43,20 @@ var GlowingDagger = function(x, y)
 			player.light_range = 3;
 	},
 });
+
+var Lightsaber = function(x, y)
+{
+	Item.call(this, x, y);
+	
+	this.type = EquipmentHandItem;
+}.extend(Item, {
+	getGlyph: function() { return "!7D7"; },
+	getName: function() { return "Lightsaber"; },
+	updatePlayerWhenEquiped: function(player)
+	{
+		player.melee_damage = "2d6+1";
+		player.melee_accuracy++;
+		if (player.light_range < 3)
+			player.light_range = 3;
+	},
+});

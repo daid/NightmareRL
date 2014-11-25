@@ -870,13 +870,14 @@ ROT.Display.prototype.draw = function(x, y, ch, fg, bg) {
  * @param {int} [maxWidth] wrap at what width?
  * @returns {int} lines drawn
  */
-ROT.Display.prototype.drawText = function(x, y, text, maxWidth) {
+ROT.Display.prototype.drawText = function(x, y, text, maxWidth, maxLines) {
 	var fg = null;
 	var bg = null;
 	var cx = x;
 	var cy = y;
 	var lines = 1;
 	if (!maxWidth) { maxWidth = this._options.width-x; }
+	if (maxLines === undefined) { maxLines = this._options.height-y; }
 
 	var tokens = ROT.Text.tokenize(text, maxWidth);
 
@@ -898,7 +899,7 @@ ROT.Display.prototype.drawText = function(x, y, text, maxWidth) {
 					// The current char is full-width and
 					// the previous char is not a space.
 					if(isFullWidth && !isPrevSpace) { cx++; } // add an extra position
-					this.draw(cx++, cy, c, fg, bg);
+					if(lines <= maxLines) { this.draw(cx++, cy, c, fg, bg); }
 					isPrevSpace = isSpace;
 					isPrevFullWidth = isFullWidth;
 				}

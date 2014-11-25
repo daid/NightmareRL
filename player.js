@@ -24,6 +24,8 @@ var Player = function(x, y) {
 	this.equipment = [null, null, null];
 	
 	this.base_maxhp = 50;
+	this.experience = 0;
+	this.level = 1;
 	this.hp = this.base_maxhp;
 	
 	this.updateStats();
@@ -193,6 +195,9 @@ var Player = function(x, y) {
 				{
 					this.craftItem(create_name);
 				}.bind(this));
+				break;
+			case "l":
+				new MessageBox(this, game.messageLog.join("\n"));
 				break;
 			case "?"://Help
 				new MessageBox(this, HelpText);
@@ -379,5 +384,9 @@ var Player = function(x, y) {
 		}
 		
 		return damage_amount;
+	},
+	gainExperience: function(amount)
+	{
+		this.experience += amount;
 	},
 });

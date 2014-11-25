@@ -164,18 +164,19 @@ function addRandomItem(x, y, w, h)
 	}while(pos in game.map && game.map[pos].static_object != null);
 	
 	var options = {
-		Medkit: 7,
-		Batteries: 2,
-		HeadLight: 1,
-		FlashLight: 5,
-		Knife: 5,
-		Sword: 2,
-		BodyArmor: 2,
-		Helmet: 2,
+		Medkit: 70,
+		Batteries: 20,
+		HeadLight: 10,
+		FlashLight: 50,
+		Knife: 50,
+		Sword: 20,
+		BodyArmor: 30,
+		Helmet: 20,
+		GlowingDagger: 1,
 		
 		//Not really items, but static objects.
-		Altar: 3,
-		Workbench: 5,
+		Altar: 30,
+		Workbench: 50,
 	};
 	var itemName = ROT.RNG.getWeightedValue(options);
 	new window[itemName](xx, yy);

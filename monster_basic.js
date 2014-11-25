@@ -10,6 +10,7 @@ var Zombie = function(x, y) {
 	this.move_delay = 1.5;
 	this.name = "Zombie";
 	this.spawn_score = 2;
+	this.experience = 20;
 }.extend(MonsterBase, {
 	getGlyph: function() { return "zDDD"; },
 	act: function()
@@ -50,6 +51,7 @@ var GiantSpider = function(x, y) {
 	this.move_delay = 1.0;
 	this.name = "Giant spider";
 	this.spawn_score = 3;
+	this.experience = 30;
 }.extend(MonsterBase, {
 	act: function()
 	{
@@ -90,6 +92,7 @@ var Ghost = function(x, y) {
 	
 	this.move_area = null;
 	this.spawn_score = 2;
+	this.experience = 20;
 }.extend(MonsterBase, {
 	act: function()
 	{

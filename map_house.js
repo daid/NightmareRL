@@ -110,7 +110,7 @@ function generateHouseArea(start_x, area_number)
 		monster_score -= monster.spawn_score;
 	}
 
-	var item_count = 5 + Math.floor(area_number / 6)
-	for(var n=0; n<2; n++)
+	var item_count = 4 + Math.floor(area_number / 6);
+	for(var n=0; n<item_count; n++)
 		addRandomItem(x, y, w, h);
 }

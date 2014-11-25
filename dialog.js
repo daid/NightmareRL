@@ -34,7 +34,7 @@ var DialogBase = function(player)
 		var height = 4;
 		for(var n=0; n<options.length; n++)
 		{
-			height += game.display.drawText(x + 2 + 3, y + 2, options[n], width - 7);
+			height += game.display.drawText(x + 2 + 3, y + 2, options[n], width - 7, 0);
 		}
 		this.drawBox(x, y, width, height);
 		var line_nr = y + 2;
@@ -87,7 +87,7 @@ var MessageBox = function(player, message)
 {
 	DialogBase.call(this, player);
 	
-	var lines = game.display.drawText(5, 5, message, 56);
+	var lines = game.display.drawText(5, 5, message, 56, 0);
 	this.drawBox(3, 3, 60, lines + 4);
 	game.display.drawText(5, 5, message, 56);
 }.extend(DialogBase, {

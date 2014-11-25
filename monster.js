@@ -11,6 +11,7 @@ var MonsterBase = function(x, y) {
 	this.move_delay = 1.0;
 	this.name = "Unknown";
 	this.spawn_score = 1;
+	this.experience = 10;
 	
 	game.addActor(this);
 }.extend(Actor, {
@@ -163,6 +164,8 @@ var MonsterBase = function(x, y) {
 		if (this.hp < 1)
 		{
 			game.removeActor(this);
+			if (source == game.player)
+				game.player.gainExperience(this.experience);
 			this.died(source);
 		}
 		

@@ -12,7 +12,7 @@ var ArmorBase = function(x, y)
 	},
 	takeDamage: function(player, damage_amount, source)
 	{
-		this.health -= (damage_amount + this.protection) * 100 / player.maxhp;
+		this.health -= damage_amount * 100 / player.maxhp;
 		if (this.health <= 0)
 		{
 			this.health = 0;
