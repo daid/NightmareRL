@@ -11,7 +11,8 @@ var HelpText = "Arrow keys: Move\n" +
 	"u: Use item.\n"+
 	"e: Equip item\n"+
 	"d: Drop item\n"+
-	"c: Craft item";
+	"c: Craft item\n"+
+	"l: Show message log";
 
 var EquipSlotHand = 0;
 var EquipSlotBody = 1;
@@ -197,7 +198,7 @@ var Player = function(x, y) {
 				}.bind(this));
 				break;
 			case "l":
-				new MessageBox(this, game.messageLog.join("\n"));
+				new MessageBox(this, game.messageLog.join("\n"), game.messageLog.length * 10);
 				break;
 			case "?"://Help
 				new MessageBox(this, HelpText);

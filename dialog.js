@@ -34,7 +34,7 @@ var DialogBase = function(player)
 		var height = 4;
 		for(var n=0; n<options.length; n++)
 		{
-			height += game.display.drawText(x + 2 + 3, y + 2, options[n], width - 7, 0);
+			height += game.display.drawText(x + 2 + 3, y + 2, options[n], width - 7, 0, 0);
 		}
 		this.drawBox(x, y, width, height);
 		var line_nr = y + 2;
@@ -47,7 +47,7 @@ var DialogBase = function(player)
 				game.display.draw(x + 2, line_nr, '0');
 			else
 				game.display.draw(x + 2, line_nr, String.fromCharCode(87 + n));
-			line_nr += game.display.drawText(x + 2 + 3, line_nr, options[n], width - 7);
+			line_nr += game.display.drawText(x + 2 + 3, line_nr, options[n], width - 7, 0, 0);
 		}
 	},
 	handleEvent: function(e)
@@ -83,20 +83,53 @@ var DialogBase = function(player)
 	}
 });
 
-var MessageBox = function(player, message)
+var MessageBox = function(player, message, start_line_nr)
 {
 	DialogBase.call(this, player);
+	if (!start_line_nr) { start_line_nr = 0; }
+
+	this._message = message;
+	this._line_nr = start_line_nr;
+	this._line_count = null;
+	this._maxLines = 16;
+	this.drawMessage();
 	
-	var lines = game.display.drawText(5, 5, message, 56, 0);
-	this.drawBox(3, 3, 60, lines + 4);
-	game.display.drawText(5, 5, message, 56);
 }.extend(DialogBase, {
+	drawMessage: function()
+	{
+		this._line_count = game.display.drawText(5, 5, this._message, 56, 0, 0);
+		this._line_nr = Math.max(0, Math.min(this._line_nr, this._line_count - this._maxLines));
+		
+		this.drawBox(3, 3, 60, Math.min(this._line_count, this._maxLines) + 4);
+		game.display.drawText(5, 5, this._message, 56, this._maxLines, this._line_nr);
+		if (this._line_nr > 0)
+			game.display.drawText(60, 4, "/\\");
+		if (this._line_nr < this._line_count - this._maxLines)
+			game.display.drawText(60, 5 + this._maxLines, "\\/");
+	},
 	handleEvent: function(e) 
 	{
 		if (e.type == "keypress")
 		{
 			this.release();
 			game.draw();
+		}else if (e.type == "keydown")
+		{
+			switch(e.keyCode)
+			{
+			case ROT.VK_UP:
+			case ROT.VK_NUMPAD8:
+				if (this._line_nr > 0)
+					this._line_nr--;
+				this.drawMessage();
+				break;
+			case ROT.VK_DOWN:
+			case ROT.VK_NUMPAD2:
+				if (this._line_nr < this._line_count - this._maxLines)
+					this._line_nr++;
+				this.drawMessage();
+				break;
+			}
 		}
 	}
 });
@@ -188,7 +221,7 @@ var CraftSelect = function(player, callback)
 	
 	if (options.length < 1)
 	{
-		new MessageBox(player, "You do not meet the requirements to craft anything right now.\n\n(Tip: Crafting requires a workbench or an altar)");
+		new MessageBox(player, "You do not meet the requirements to craft anything right now.\n\n(Tip: Crafting requires a workbench or an altar and the proper ingredients)");
 		return;
 	}
 	this._options = options;
